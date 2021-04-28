@@ -20,9 +20,74 @@
             fee: 0.0005
         }
     </script>
+    <style>
+        body {
+            background-color: lightgrey;
+        }
+
+        #fund-list th, #fund-list td{
+            border: 1px solid black;
+        }
+    </style>
 </head>
 
+
+
 <body onload="onLoadStartUp()">
+
+<h3>Bob's Funds</h3>
+Current BTC rate: <span id="btc-usd-rate"></span> USD | <span id="btc-inr-rate"></span> INR<br />
+Current USD rate: <span id="usd-rate"></span> INR <br />
+<hr />
+<form id="add-bond-form">
+    FLO ID: <input type="text" name="floid" pattern="[0-9a-zA-Z]{34}"><br />
+    Amount: <input type="text" name="amount" pattern="\d.+">INR<br />
+    Bond start date: <input type="date" name="start_date"><br />
+    Base BTC value: <input type="text" name="base" pattern="^[\d,]+.?\d$">USD<br />
+    Base USD rate: <input type="number" name="usd_rate" step="0.01">INR<br />
+    Guaranteed interest rate: <input type="number" name="gi_r" min=0 max=100 step="0.01">%<br />
+    Guaranteed interest period: <input type="number" name="gi_pv">
+    <select name="gi_pt">
+        <option value="year(s)">year(s)</option>
+        <option value="month(s)">month(s)</option>
+        <option value="week(s)">week(s)</option>
+        <option value="day(s)">day(s)</option>
+    </select><br />
+    Gain share: <input type="number" name="cut" min=0 max=100>%<br />
+    Lock-in period: <input type="number" name="lockin_v">
+    <select name="lockin_t">
+        <option value="year(s)">year(s)</option>
+        <option value="month(s)">month(s)</option>
+        <option value="week(s)">week(s)</option>
+        <option value="day(s)">day(s)</option>
+    </select><br />
+    <input type="submit" value="Add Bond" /><input type="reset" value="Clear">
+</form>
+<hr />
+<button id="refresh-btn">refresh</button>
+<div id="funds-container"></div>
+<div id="templates">
+    <div class="fund-block">
+        <table class="fund-details">
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2">FLO ID</th>
+                    <th colspan="2">Amount invested</th>
+                    <th colspan="2">Net Bond value</th>
+                </tr>
+                <tr>
+                    <th>(INR)</th>
+                    <th>(USD)</th>
+                    <th>(INR)</th>
+                    <th>(USD)</th>
+                </tr>
+            </thead>
+            <tbody class="fund-list"></tbody>
+        </table>
+    </div>
+</div>
 
 <script id="init_lib" version="1.0.1">
     //All util libraries required for Standard operations (DO NOT EDIT ANY)
@@ -8020,9 +8085,8 @@ Bitcoin.Util = {
             document.getElementById("usd-rate").textContent = rates.USD_INR.toFixed(2);
             document.getElementById("btc-usd-rate").textContent = rates.BTC_USD.toFixed(2);
             document.getElementById("btc-inr-rate").textContent = rates.BTC_INR.toFixed(2);
-            document.getElementById("bond-list-body").innerHTML = '';
+            document.getElementById("fund-list").innerHTML = '';
             compactIDB.readAllData("terms").then(terms => {
-                renderTerms(terms);
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
                     compactIDB.searchData("funds", {
@@ -8036,7 +8100,6 @@ Bitcoin.Util = {
                 }
             }).catch(error => console.error(error));
             getTermsFromBlockchain().then(terms => {
-                renderTerms(terms);
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
                     getFundsFromBlockchain(floID)
@@ -8135,9 +8198,9 @@ Bitcoin.Util = {
                 term["maxPeriod"] = parsePeriod();
             else if (/^Fund Management Fees:/i.test(s))
                 term["fee"] = parseFloat(s.substring("Fund Management Fees:".length).trim());
-            else if(/^Bond issuing authorized FLO ID:/i)
+            else if (/^Bond issuing authorized FLO ID:/i)
                 term["floID"] = s.substring("Bond issuing authorized FLO ID:".length).trim();
-            else if (/^Tap out period/i.test(s)){
+            else if (/^Tap out period/i.test(s)) {
                 let x = s.substring("Tap out period available ".length).toLowerCase().split("after")
                 term["topoutWindow"] = parsePeriod(x[0]);
                 term["tapoutInterval"] = x[1].match(/\d+ [a-z]+/gi).map(y => parsePeriod(y))
@@ -8146,15 +8209,43 @@ Bitcoin.Util = {
     }
 
     function renderFunds(term, funds) {
+        let msecInYr = 1000 * 60 * 60 * 24 * 365,
+            fundContainer = document.getElementById("funds-container");
         console.info(term);
-        funds.forEach(fund => {
-            let f = parseFunds(fund);
+        for (let t in funds) {
+            let f = parseFunds(funds[t]);
             console.info(f);
+            let startDate = new Date(f.start_date).getTime(),
+                fundBlock = document.getElementById("template").getElementsByClassName("fund-block")[0].cloneNode(true),
+                detailsTable = fundBlock.getElementsByClassName("fund-details")[0],
+                fundTable = fundBlock.getElementsByClassName("fund-list")[0],
+                detailTxt = `
+                    <tr><th>Start date</th><td>${dateFormat(f.start_date)}</td></tr>
+                    <tr><th>Base BTC value</th><td>${f.BTC_base} USD</td></tr>
+                    <tr><th>Base USD rate</th><td>${f.USD_base} INR</td></tr>
+                    <tr><th>End date</th><td>${dateFormat((startDate + (term.maxPeriod * msecInYr)))}</td></tr>
+                `;
+            term["tapoutInterval"].forEach((i, k) => {
+                let ts = startDate + (i * msecInYr),
+                    te = ts + term["topoutWindow"] * msecInYr;
+                detailTxt += `<tr><th>Tapout ${k+1}</th><td>${dateFormat(ts)} to ${dateFormat(te)}</td></tr>`
+            })
+            detailsTable.innerHTML = detailTxt;
+            detailsTable.setAttribute("title", term.data.replace(/\|/g, "\n"));
             for (let h in f.amounts) {
                 let netVal = calcNetValue(f.BTC_base, f.USD_base, f.start_date, f.amounts[h], term.fee);
                 console.info(h, f.amounts[h], netVal);
+                let row = fundTable.insertRow();
+                row.insertCell().textContent = h;
+                row.insertCell().textContent = f.amounts[h];
+                row.insertCell().textContent = f.amounts[h] / f.USD_base;
+                row.insertCell().textContent = netVal;
+                row.insertCell().textContent = netVal / USD_current;
             }
-        })
+            fundTable.setAttribute("title", funds[t].replace(/\|/g, "\n"));
+            //add link to view tx in blockchain [1. term txn(variable = term.txid), 2. fund tnx (variable = t)];
+            fundContainer.appendChild(fundBlock);
+        }
     }
 
     function parseFunds(data) {
@@ -8231,7 +8322,6 @@ Bitcoin.Util = {
             }).catch(error => reject(error))
         })
     }
-
 
     function yrDiff(d1 = null, d2 = null) {
         d1 = d1 ? new Date(d1) : new Date();
