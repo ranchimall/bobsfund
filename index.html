@@ -15,7 +15,7 @@
             },
             adminID: "FKAEdnPfjXLHSYwrXQu377ugN4tXU7VGdf",
             application: "bobsFundTest",
-            productStr: "Product: Bob's Fund",
+            productStr: "Bob's Fund",
             sendAmt: 0.001,
             fee: 0.0005
         }
@@ -8341,6 +8341,38 @@ Bitcoin.Util = {
         net += net * interest;
         //console.info(gain, interest, net)
         return net * USD_current;
+    }
+
+    function createFundString(BTC_base, USD_base, start_date, funds) {
+        let fList = [];
+        for (let f in funds)
+            fList.push(`${f}:${funds[f]}`)
+        return [
+            productStr,
+            `Base Value: ${BTC_base} USD`,
+            `USD INR rate at start: ${USD_base}`,
+            `Fund Start date: ${dateFormat(start_date)}`,
+            `Funds (INR): [${fList.join(",")}]`
+        ].join("|");
+    }
+
+    function createTermString(floID, maxPeriod, tapoutWindow, tapoutInterval, fee = 0) {
+        if (Array.isArray(tapoutInterval)) {
+            let x = tapoutInterval.pop(),
+                y = tapoutInterval.join(", ")
+            tapoutInterval = `${y} and ${x}`
+        }
+
+        return [
+            productStr,
+            "Long term Bitcoin price based asset",
+            "Price are proportional directly to Bitcoin Prices",
+            `Bonds need to be held for ${maxPeriod}`,
+            `Tap out period available for ${tapoutWindow} after ${tapoutInterval}`,
+            `Fund Management Fees: ${fee ? fee+"%": "0 (Zero)"}`,
+            `Bitcoin Float can be used by the fund for meeting it's expenses`,
+            `Bond issuing authorized FLO ID: ${floID}`
+        ].join("|");
     }
 </script>
 
