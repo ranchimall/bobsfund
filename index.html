@@ -28,6 +28,9 @@
         #fund-list th, #fund-list td{
             border: 1px solid black;
         }
+        .hide{
+            display: none;
+        }
     </style>
 </head>
 
@@ -39,34 +42,9 @@
 Current BTC rate: <span id="btc-usd-rate"></span> USD | <span id="btc-inr-rate"></span> INR<br />
 Current USD rate: <span id="usd-rate"></span> INR <br />
 <hr />
-<form id="add-bond-form">
-    FLO ID: <input type="text" name="floid" pattern="[0-9a-zA-Z]{34}"><br />
-    Amount: <input type="text" name="amount" pattern="\d.+">INR<br />
-    Bond start date: <input type="date" name="start_date"><br />
-    Base BTC value: <input type="text" name="base" pattern="^[\d,]+.?\d$">USD<br />
-    Base USD rate: <input type="number" name="usd_rate" step="0.01">INR<br />
-    Guaranteed interest rate: <input type="number" name="gi_r" min=0 max=100 step="0.01">%<br />
-    Guaranteed interest period: <input type="number" name="gi_pv">
-    <select name="gi_pt">
-        <option value="year(s)">year(s)</option>
-        <option value="month(s)">month(s)</option>
-        <option value="week(s)">week(s)</option>
-        <option value="day(s)">day(s)</option>
-    </select><br />
-    Gain share: <input type="number" name="cut" min=0 max=100>%<br />
-    Lock-in period: <input type="number" name="lockin_v">
-    <select name="lockin_t">
-        <option value="year(s)">year(s)</option>
-        <option value="month(s)">month(s)</option>
-        <option value="week(s)">week(s)</option>
-        <option value="day(s)">day(s)</option>
-    </select><br />
-    <input type="submit" value="Add Bond" /><input type="reset" value="Clear">
-</form>
-<hr />
 <button id="refresh-btn">refresh</button>
 <div id="funds-container"></div>
-<div id="templates">
+<div id="templates" class="hide">
     <div class="fund-block">
         <table class="fund-details">
         </table>
@@ -8085,7 +8063,7 @@ Bitcoin.Util = {
             document.getElementById("usd-rate").textContent = rates.USD_INR.toFixed(2);
             document.getElementById("btc-usd-rate").textContent = rates.BTC_USD.toFixed(2);
             document.getElementById("btc-inr-rate").textContent = rates.BTC_INR.toFixed(2);
-            document.getElementById("fund-list").innerHTML = '';
+            document.getElementById("funds-container").innerHTML = '';
             compactIDB.readAllData("terms").then(terms => {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
@@ -8128,8 +8106,7 @@ Bitcoin.Util = {
                                 floID,
                                 data,
                                 txid
-                            }))
-                            .catch(error => rej(error))
+                            })).catch(error => rej(error))
                     });
                     Promise.allSettled(result.data.reverse().map(d => addTerm(d[0], d[1]))).then(results => {
                         let newTerms = {}
@@ -8162,10 +8139,10 @@ Bitcoin.Util = {
         })
     }
 
-    function parseTerm(str) {
+    function parseTerm(obj) {
 
         const parsePeriod = (str) => {
-            let n;
+            let n, y = 0;
             str.toLowerCase().replace(/,/g, '').split(" ").forEach(s => {
                 if (!isNaN(s))
                     n = parseFloat(s);
@@ -8175,30 +8152,33 @@ Bitcoin.Util = {
                     case "year(s)":
                     case "year":
                     case "years":
-                        return n;
+                        y += n; break;
                     case "month(s)":
                     case "month":
                     case "months":
-                        return n / 12;
+                    y += n / 12; break;
                     case "week(s)":
                     case "week":
                     case "weeks":
-                        return n / 52.1429;
+                    y += n / 52.1429; break;
                     case "day(s)":
                     case "day":
                     case "days":
-                        return n / 365;
+                    y += n / 365; break;
                 }
             });
             return y;
         }
-        let term = {}
-        str.split("|").forEach(s => {
+        let term = {
+            data: obj.data,
+            txid: obj.txid
+        }
+        term.data.split("|").forEach(s => {
             if (/^Bonds need to be held for/i.test(s))
-                term["maxPeriod"] = parsePeriod();
+                term["maxPeriod"] = parsePeriod(s.match(/\d+ (year)|(month)|(week)|(day)/i)[0]);
             else if (/^Fund Management Fees:/i.test(s))
                 term["fee"] = parseFloat(s.substring("Fund Management Fees:".length).trim());
-            else if (/^Bond issuing authorized FLO ID:/i)
+            else if (/^Bond issuing authorized FLO ID:/i.test(s))
                 term["floID"] = s.substring("Bond issuing authorized FLO ID:".length).trim();
             else if (/^Tap out period/i.test(s)) {
                 let x = s.substring("Tap out period available ".length).toLowerCase().split("after")
@@ -8206,28 +8186,44 @@ Bitcoin.Util = {
                 term["tapoutInterval"] = x[1].match(/\d+ [a-z]+/gi).map(y => parsePeriod(y))
             }
         })
+        return term;
     }
 
     function renderFunds(term, funds) {
-        let msecInYr = 1000 * 60 * 60 * 24 * 365,
-            fundContainer = document.getElementById("funds-container");
+        const dateAdder = function (start_date, n){
+        let date = new Date(start_date);
+        let y = n,
+                m = n * 12,
+                w = n * 52.1429,
+                d = n * 365;
+            if (y == Math.floor(y))
+            date.setFullYear(date.getFullYear() + y);
+            else if (m == Math.floor(m))
+            date.setMonth(date.getMonth() + m);
+            else if (w == Math.floor(w))
+            date.setDate(date.getDate() + w * 7);
+            else if (d == Math.floor(d))
+            date.setDate(date.getDate() + d);
+            return date;
+    }
+        let fundContainer = document.getElementById("funds-container");
         console.info(term);
         for (let t in funds) {
             let f = parseFunds(funds[t]);
             console.info(f);
             let startDate = new Date(f.start_date).getTime(),
-                fundBlock = document.getElementById("template").getElementsByClassName("fund-block")[0].cloneNode(true),
+                fundBlock = document.getElementById("templates").getElementsByClassName("fund-block")[0].cloneNode(true),
                 detailsTable = fundBlock.getElementsByClassName("fund-details")[0],
                 fundTable = fundBlock.getElementsByClassName("fund-list")[0],
                 detailTxt = `
                     <tr><th>Start date</th><td>${dateFormat(f.start_date)}</td></tr>
                     <tr><th>Base BTC value</th><td>${f.BTC_base} USD</td></tr>
                     <tr><th>Base USD rate</th><td>${f.USD_base} INR</td></tr>
-                    <tr><th>End date</th><td>${dateFormat((startDate + (term.maxPeriod * msecInYr)))}</td></tr>
+                    <tr><th>End date</th><td>${dateFormat(dateAdder(startDate, term["maxPeriod"]))}</td></tr>
                 `;
             term["tapoutInterval"].forEach((i, k) => {
-                let ts = startDate + (i * msecInYr),
-                    te = ts + term["topoutWindow"] * msecInYr;
+                let ts = dateAdder(startDate, i),
+                    te = dateAdder(ts, term["topoutWindow"]);
                 detailTxt += `<tr><th>Tapout ${k+1}</th><td>${dateFormat(ts)} to ${dateFormat(te)}</td></tr>`
             })
             detailsTable.innerHTML = detailTxt;
@@ -8237,10 +8233,10 @@ Bitcoin.Util = {
                 console.info(h, f.amounts[h], netVal);
                 let row = fundTable.insertRow();
                 row.insertCell().textContent = h;
-                row.insertCell().textContent = f.amounts[h];
-                row.insertCell().textContent = f.amounts[h] / f.USD_base;
-                row.insertCell().textContent = netVal;
-                row.insertCell().textContent = netVal / USD_current;
+                row.insertCell().textContent = f.amounts[h].toFixed(2);
+                row.insertCell().textContent = (f.amounts[h] / f.USD_base).toFixed(2);
+                row.insertCell().textContent = netVal.toFixed(2);
+                row.insertCell().textContent = (netVal / USD_current).toFixed(2);
             }
             fundTable.setAttribute("title", funds[t].replace(/\|/g, "\n"));
             //add link to view tx in blockchain [1. term txn(variable = term.txid), 2. fund tnx (variable = t)];
@@ -8284,13 +8280,14 @@ Bitcoin.Util = {
                     break;
                 case "funds (inr)":
                     funds["amounts"] = {};
-                    d = d[1].substring(1, -1).split(",").forEach(x => {
-                        x = x.split(":");
-                        funds[x[0]] = parseNumber(x[1]);
+                    d[1].substring(1,  d[1].length-1).split("/").forEach(x => {
+                        x = x.split("=");
+                        funds["amounts"][x[0]] = parseNumber(x[1]);
                     });
                     break;
             }
         })
+        return funds;
     }
 
     function dateFormat(date = null) {
@@ -8323,16 +8320,6 @@ Bitcoin.Util = {
         })
     }
 
-    function yrDiff(d1 = null, d2 = null) {
-        d1 = d1 ? new Date(d1) : new Date();
-        d2 = d2 ? new Date(d2) : new Date();
-        let tmp = Math.abs(d2 - d1)
-        tmp = Math.floor(tmp / (1000 * 60 * 60 * 24)); // find number of days
-        tmp = tmp / 365
-        //need to implement leap yr
-        return tmp
-    }
-
     function calcNetValue(BTC_base, USD_base, startDate, amount, fee) {
         let gain, interest, net;
         gain = (BTC_current - BTC_base) / BTC_base;
@@ -8346,13 +8333,13 @@ Bitcoin.Util = {
     function createFundString(BTC_base, USD_base, start_date, funds) {
         let fList = [];
         for (let f in funds)
-            fList.push(`${f}:${funds[f]}`)
+            fList.push(`${f}=${funds[f]}`);
         return [
-            productStr,
+            floGlobals.productStr,
             `Base Value: ${BTC_base} USD`,
             `USD INR rate at start: ${USD_base}`,
             `Fund Start date: ${dateFormat(start_date)}`,
-            `Funds (INR): [${fList.join(",")}]`
+            `Funds (INR): [${fList.join("/")}]`
         ].join("|");
     }
 
@@ -8364,7 +8351,7 @@ Bitcoin.Util = {
         }
 
         return [
-            productStr,
+            floGlobals.productStr,
             "Long term Bitcoin price based asset",
             "Price are proportional directly to Bitcoin Prices",
             `Bonds need to be held for ${maxPeriod}`,
