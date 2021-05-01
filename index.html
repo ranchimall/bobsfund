@@ -25,7 +25,7 @@
             background-color: lightgrey;
         }
 
-        #fund-list th, #fund-list td{
+        table th, table td{
             border: 1px solid black;
         }
         .hide{
@@ -41,8 +41,8 @@
 <h3>Bob's Funds</h3>
 Current BTC rate: <span id="btc-usd-rate"></span> USD | <span id="btc-inr-rate"></span> INR<br />
 Current USD rate: <span id="usd-rate"></span> INR <br />
-<hr />
 <button id="refresh-btn">refresh</button>
+<hr />
 <div id="funds-container"></div>
 <div id="templates" class="hide">
     <div class="fund-block">
@@ -64,6 +64,7 @@ Current USD rate: <span id="usd-rate"></span> INR <br />
             </thead>
             <tbody class="fund-list"></tbody>
         </table>
+        <hr />
     </div>
 </div>
 
