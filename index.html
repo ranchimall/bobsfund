@@ -8090,27 +8090,28 @@ Bitcoin.Util = {
 
     function getTermsFromBlockchain() {
         return new Promise((resolve, reject) => {
-            compactIDB.readData("appendix", "lastTx" + floGlobals.adminID).then(lastTx => {
+            compactIDB.readData("appendix", "lastTx|" + floGlobals.adminID).then(lastTx => {
                 floBlockchainAPI.readData(floGlobals.adminID, {
                     ignoreOld: lastTx,
                     sentOnly: true,
                     txid: true,
                     filter: d => d.startsWith(floGlobals.productStr)
                 }).then(result => {
-                    const addTerm = (txid, data) => Promise((res, rej) => {
-                        let floID = data.match(/Bond issuing authorized FLO ID: [a-zA-Z0-9]{34}/i).split(": ")[1];
+                    const addTerm = (txid, data) => new Promise((res, rej) => {
+                        let floID = data.match(/Bond issuing authorized FLO ID: [a-zA-Z0-9]{34}/i).toString().split(": ")[1];
                         compactIDB.addData('terms', {
-                                data,
-                                txid
-                            }, floID).then(result => res({
-                                floID,
-                                data,
-                                txid
-                            })).catch(error => rej(error))
+                            data,
+                            txid
+                        }, floID).then(r => res({
+                            floID,
+                            data,
+                            txid
+                        })).catch(error => rej(error))
                     });
                     Promise.allSettled(result.data.reverse().map(d => addTerm(d[0], d[1]))).then(results => {
                         let newTerms = {}
                         results.forEach(r => r.status === "fulfilled" ? newTerms[r.value.floID] = r.value : null)
+                        compactIDB.writeData("appendix", result.totalTxs, "lastTx|" + floGlobals.adminID)
                         resolve(newTerms)
                     })
                 }).catch(error => reject(error))
@@ -8130,9 +8131,9 @@ Bitcoin.Util = {
                     let data = {}
                     result.data.forEach(d => {
                         compactIDB.addData('funds', d[1], floID + "|" + d[0])
-                        data[d[0]] = d[1];
+                        data[floID + "|" + d[0]] = d[1];
                     });
-                    compactIDB.writeData('appendix', result.totalTxs, "lastTx|" + floGlobals.adminID);
+                    compactIDB.writeData('appendix', result.totalTxs, "lastTx|" + floID);
                     resolve(data);
                 }).catch(error => reject(error))
             }).catch(error => reject(error))
@@ -8152,19 +8153,23 @@ Bitcoin.Util = {
                     case "year(s)":
                     case "year":
                     case "years":
-                        y += n; break;
+                        y += n;
+                        break;
                     case "month(s)":
                     case "month":
                     case "months":
-                    y += n / 12; break;
+                        y += n / 12;
+                        break;
                     case "week(s)":
                     case "week":
                     case "weeks":
-                    y += n / 52.1429; break;
+                        y += n / 52.1429;
+                        break;
                     case "day(s)":
                     case "day":
                     case "days":
-                    y += n / 365; break;
+                        y += n / 365;
+                        break;
                 }
             });
             return y;
@@ -8190,22 +8195,24 @@ Bitcoin.Util = {
     }
 
     function renderFunds(term, funds) {
-        const dateAdder = function (start_date, n){
-        let date = new Date(start_date);
-        let y = n,
+        if (!Object.keys(funds).length)
+            return;
+        const dateAdder = function(start_date, n) {
+            let date = new Date(start_date);
+            let y = n,
                 m = n * 12,
                 w = n * 52.1429,
                 d = n * 365;
             if (y == Math.floor(y))
-            date.setFullYear(date.getFullYear() + y);
+                date.setFullYear(date.getFullYear() + y);
             else if (m == Math.floor(m))
-            date.setMonth(date.getMonth() + m);
+                date.setMonth(date.getMonth() + m);
             else if (w == Math.floor(w))
-            date.setDate(date.getDate() + w * 7);
+                date.setDate(date.getDate() + w * 7);
             else if (d == Math.floor(d))
-            date.setDate(date.getDate() + d);
+                date.setDate(date.getDate() + d);
             return date;
-    }
+        }
         let fundContainer = document.getElementById("funds-container");
         console.info(term);
         for (let t in funds) {
@@ -8227,7 +8234,6 @@ Bitcoin.Util = {
                 detailTxt += `<tr><th>Tapout ${k+1}</th><td>${dateFormat(ts)} to ${dateFormat(te)}</td></tr>`
             })
             detailsTable.innerHTML = detailTxt;
-            detailsTable.setAttribute("title", term.data.replace(/\|/g, "\n"));
             for (let h in f.amounts) {
                 let netVal = calcNetValue(f.BTC_base, f.USD_base, f.start_date, f.amounts[h], term.fee);
                 console.info(h, f.amounts[h], netVal);
@@ -8238,8 +8244,10 @@ Bitcoin.Util = {
                 row.insertCell().textContent = netVal.toFixed(2);
                 row.insertCell().textContent = (netVal / USD_current).toFixed(2);
             }
-            fundTable.setAttribute("title", funds[t].replace(/\|/g, "\n"));
-            //add link to view tx in blockchain [1. term txn(variable = term.txid), 2. fund tnx (variable = t)];
+            let blockTitle = '--(Terms and condition)--\n' + term.data.replace(/\|/g, "\n") + '\n\n--(Fund Details)--\n' +
+                funds[t].replace(/\|/g, "\n").replace(/:=/g, "\t:\t").replace(/{/g, "\n\t").replace(/},?/g, "").replace(/]/g, "\n]");
+            fundBlock.setAttribute("title", blockTitle);
+            //add link to view tx in blockchain [1. term txn(variable = term.txid), 2. fund tnx (variable = t.split("|")[1])];
             fundContainer.appendChild(fundBlock);
         }
     }
@@ -8278,11 +8286,11 @@ Bitcoin.Util = {
                 case "usd inr rate at start":
                     funds["USD_base"] = parseFloat(d[1]);
                     break;
-                case "funds (inr)":
+                case "fund invesments (inr)":
                     funds["amounts"] = {};
-                    d[1].substring(1,  d[1].length-1).split("/").forEach(x => {
-                        x = x.split("=");
-                        funds["amounts"][x[0]] = parseNumber(x[1]);
+                    d[1].match(/\w{34}:=[\w ,.]+/gi).forEach(a => {
+                        a = a.split(":=");
+                        funds["amounts"][a[0]] = parseNumber(a[1]);
                     });
                     break;
             }
@@ -8333,13 +8341,13 @@ Bitcoin.Util = {
     function createFundString(BTC_base, USD_base, start_date, funds) {
         let fList = [];
         for (let f in funds)
-            fList.push(`${f}=${funds[f]}`);
+            fList.push(`{${f}:=${funds[f]}}`);
         return [
             floGlobals.productStr,
             `Base Value: ${BTC_base} USD`,
             `USD INR rate at start: ${USD_base}`,
             `Fund Start date: ${dateFormat(start_date)}`,
-            `Funds (INR): [${fList.join("/")}]`
+            `Fund invesments (INR): [${fList.join(",")}]`
         ].join("|");
     }
 
