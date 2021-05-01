@@ -14,7 +14,7 @@
                 FLO_TEST: ['https://testnet-flosight.duckdns.org/', 'https://testnet.flocha.in/']
             },
             adminID: "FKAEdnPfjXLHSYwrXQu377ugN4tXU7VGdf",
-            application: "bobsFundTest",
+            application: "bobsFund_Test",
             productStr: "Bob's Fund",
             sendAmt: 0.001,
             fee: 0.0005
@@ -8129,13 +8129,34 @@ Bitcoin.Util = {
                     txid: true,
                     filter: d => d.startsWith(floGlobals.productStr)
                 }).then(result => {
-                    let data = {}
-                    result.data.forEach(d => {
-                        compactIDB.addData('funds', d[1], floID + "|" + d[0])
-                        data[floID + "|" + d[0]] = d[1];
-                    });
-                    compactIDB.writeData('appendix', result.totalTxs, "lastTx|" + floID);
-                    resolve(data);
+                    Promise.all(result.data.reverse().map(d => new Promise((res, rej) => {
+                        if (/continue: /i.test(d[1])) {
+                            let ctx = d[1].match(/continue: [0-9a-z]{64}/i).toString().split(": ")[1];
+                            console.info(floID + "|" + ctx)
+                            compactIDB.readData('funds', floID + "|" + ctx).then(fd => {
+                                fd.push({
+                                    txid: d[0],
+                                    data: d[1]
+                                })
+                                compactIDB.writeData('funds', fd, floID + "|" + ctx)
+                                    .then(r => res([floID + "|" + ctx, fd]))
+                                    .catch(e => rej(e))
+                            }).catch(error => rej(error))
+                        } else {
+                            let fd = [{
+                                txid: d[0],
+                                data: d[1]
+                            }]
+                            compactIDB.addData('funds', fd, floID + "|" + d[0])
+                                .then(r => res([floID + "|" + d[0], fd]))
+                                .catch(e => rej(e))
+                        }
+                    }))).then(results => {
+                        compactIDB.writeData('appendix', result.totalTxs, "lastTx|" + floID);
+                        let data = {};
+                        results.forEach(r => data[r[0]] = r[1])
+                        resolve(data);
+                    }).catch(error => reject(error))
                 }).catch(error => reject(error))
             }).catch(error => reject(error))
         })
@@ -8214,10 +8235,16 @@ Bitcoin.Util = {
                 date.setDate(date.getDate() + d);
             return date;
         }
+        const removeElementIfExist = id => {
+            let existing = document.getElementById(id);
+            if (existing)
+                existing.remove();
+        }
+
         let fundContainer = document.getElementById("funds-container");
         console.info(term);
-        for (let t in funds) {
-            let f = parseFunds(funds[t]);
+        for (let k in funds) {
+            let f = parseFunds(funds[k]);
             console.info(f);
             let startDate = new Date(f.start_date).getTime(),
                 fundBlock = document.getElementById("templates").getElementsByClassName("fund-block")[0].cloneNode(true),
@@ -8235,20 +8262,24 @@ Bitcoin.Util = {
                 detailTxt += `<tr><th>Tapout ${k+1}</th><td>${dateFormat(ts)} to ${dateFormat(te)}</td></tr>`
             })
             detailsTable.innerHTML = detailTxt;
-            for (let h in f.amounts) {
-                let netVal = calcNetValue(f.BTC_base, f.USD_base, f.start_date, f.amounts[h], term.fee);
-                console.info(h, f.amounts[h], netVal);
+            f.amounts.forEach(a => {
+                let investor = a[0],
+                    amount = a[1],
+                    netVal = calcNetValue(f.BTC_base, f.USD_base, f.start_date, amount, term.fee);
+                console.info(investor, amount, netVal);
                 let row = fundTable.insertRow();
-                row.insertCell().textContent = h;
-                row.insertCell().textContent = f.amounts[h].toFixed(2);
-                row.insertCell().textContent = (f.amounts[h] / f.USD_base).toFixed(2);
+                row.insertCell().textContent = investor;
+                row.insertCell().textContent = amount.toFixed(2);
+                row.insertCell().textContent = (amount / f.USD_base).toFixed(2);
                 row.insertCell().textContent = netVal.toFixed(2);
                 row.insertCell().textContent = (netVal / USD_current).toFixed(2);
-            }
-            let blockTitle = '--(Terms and condition)--\n' + term.data.replace(/\|/g, "\n") + '\n\n--(Fund Details)--\n' +
-                funds[t].replace(/\|/g, "\n").replace(/:=/g, "\t:\t").replace(/{/g, "\n\t").replace(/},?/g, "").replace(/]/g, "\n]");
-            fundBlock.setAttribute("title", blockTitle);
-            //add link to view tx in blockchain [1. term txn(variable = term.txid), 2. fund tnx (variable = t.split("|")[1])];
+            });
+            fundBlock.setAttribute("title", '--(Terms and condition)--\n' + term.data.replace(/\|/g, "\n") +
+                '\n\n--(Fund Details)--\n' + funds[k].map(fd => fd.data).join("\n-----\n")
+                .replace(/\|/g, "\n").replace(/:=/g, "\t:\t").replace(/{/g, "\n\t").replace(/},?/g, "").replace(/]/g, "\n]"));
+            removeElementIfExist(k);
+            fundBlock.id = k;
+            //add link to view tx in blockchain [1. term txn(variable = term.txid), 2. fund tnx {variable = funds[k].map(fd => fd.txid)}];
             fundContainer.appendChild(fundBlock);
         }
     }
@@ -8262,39 +8293,39 @@ Bitcoin.Util = {
             "crores": 10000000,
         }
         const parseNumber = (str) => {
-            let n = 0,
-                g = 0;
-            str.toLowerCase().replace(/,/g, '').split(" ").forEach(s => {
-                if (s in magnitude) {
-                    n += magnitude[s] * g;
-                    g = 0;
-                } else if (!isNaN(s))
-                    g = parseFloat(s);
+            let n = 0
+            str.replace(/,/g, '').match(/[\d.]+ *[a-z]*/gi).forEach(s => {
+                let v = s.match(/\d+/),
+                    m = s.match(/[a-z]+/i);
+                n += parseFloat(v) * (m ? magnitude[m] : 1)
             })
-            return n + g;
+            return n;
         }
 
-        let funds = {}
-        data.split("|").forEach(d => {
-            d = d.split(': ');
-            switch (d[0].toLowerCase()) {
-                case "fund start date":
-                    funds["start_date"] = d[1];
-                    break;
-                case "base value":
-                    funds["BTC_base"] = parseFloat(d[1].slice(0, -4));
-                    break;
-                case "usd inr rate at start":
-                    funds["USD_base"] = parseFloat(d[1]);
-                    break;
-                case "fund invesments (inr)":
-                    funds["amounts"] = {};
-                    d[1].match(/\w{34}:=[\w ,.]+/gi).forEach(a => {
-                        a = a.split(":=");
-                        funds["amounts"][a[0]] = parseNumber(a[1]);
-                    });
-                    break;
-            }
+        let funds = {};
+        data.forEach(fd => {
+            let cont = /continue: [a-z0-9]{64}\|/.test(fd);
+            fd.data.split("|").forEach(d => {
+                d = d.split(': ');
+                switch (d[0].toLowerCase()) {
+                    case "fund start date":
+                        cont ? null : funds["start_date"] = d[1];
+                        break;
+                    case "base value":
+                        cont ? null : funds["BTC_base"] = parseFloat(d[1].slice(0, -4));
+                        break;
+                    case "usd inr rate at start":
+                        cont ? null : funds["USD_base"] = parseFloat(d[1]);
+                        break;
+                    case "fund invesments (inr)":
+                        funds["amounts"] = funds["amounts"] || [];
+                        d[1].match(/\w{34}:=[\w ,.]+/gi).forEach(a => {
+                            a = a.split(":=");
+                            funds["amounts"].push([a[0], parseNumber(a[1])]);
+                        });
+                        break;
+                }
+            });
         })
         return funds;
     }
@@ -8340,15 +8371,28 @@ Bitcoin.Util = {
     }
 
     function createFundString(BTC_base, USD_base, start_date, funds) {
-        let fList = [];
-        for (let f in funds)
-            fList.push(`{${f}:=${funds[f]}}`);
+        funds = funds.map(f => {
+            f = f.replace(":=", ":").split(":");
+            return `{${f[0].trim()}:=${f[1].trim()}}`
+        });
         return [
             floGlobals.productStr,
             `Base Value: ${BTC_base} USD`,
             `USD INR rate at start: ${USD_base}`,
             `Fund Start date: ${dateFormat(start_date)}`,
-            `Fund invesments (INR): [${fList.join(",")}]`
+            `Fund invesments (INR): [${funds.join(",")}]`
+        ].join("|");
+    }
+
+    function continueFund(fundID, funds) {
+        funds = funds.map(f => {
+            f = f.replace(":=", ":").split(":");
+            return `{${f[0].trim()}:=${f[1].trim()}}`
+        })
+        return [
+            floGlobals.productStr,
+            "Continue: " + fundID,
+            `Fund invesments (INR): [${funds.join(",")}]`
         ].join("|");
     }
 
