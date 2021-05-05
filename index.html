@@ -128,8 +128,8 @@
                 <ul id="investors_input_list" class="grid gap-1">
                     <li class="investor-input grid">
                         <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
-                        <sm-input placeholder="Amount(₹)" class="outlined" animate></sm-input>
-                        <button class="remove-investor">
+                        <sm-input placeholder="Amount(₹)" type="number" class="outlined" animate></sm-input>
+                        <button class="remove-investor" title="Remove this investor">
                             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
                         </button>
                     </li>
@@ -146,7 +146,7 @@
                     Authorization FLO ID
                     <input type="text" name="floid" pattern="[0-9a-zA-Z]{34}">
                 </label>
-                <label class="grid gap-0-5">
+                <div class="grid gap-0-5">
                     Maximum Duration
                     <div class="flex">
                         <input type="number" name="gi_pv">
@@ -157,8 +157,8 @@
                             <sm-option value="day(s)">day(s)</sm-option>
                         </sm-select>
                     </div>
-                </label>
-                <label class="grid gap-0-5">
+                </div>
+                <div class="grid gap-0-5">
                     Tapout window
                     <div class="flex">
                         <input type="number" name="gi_pv">
@@ -169,19 +169,17 @@
                             <sm-option value="day(s)">day(s)</sm-option>
                         </sm-select>
                     </div>
-                </label>
-                <label class="grid gap-0-5">
+                </div>
+                <div class="grid gap-0-5">
                     Tapout interval(Use comma serated values. e.g. 10, 15...)
                     <div class="flex">
                         <input type="text" name="tapout-interval">
                         <sm-select id="" align-select="right">
                             <sm-option value="year(s)" selected>year(s)</sm-option>
                             <sm-option value="month(s)">month(s)</sm-option>
-                            <sm-option value="week(s)">week(s)</sm-option>
-                            <sm-option value="day(s)">day(s)</sm-option>
                         </sm-select>
                     </div>
-                </label>
+                </div>
                 <label class="grid gap-0-5">
                    Fee
                     <input type="number" name="fee" min=0 value="0">
@@ -10130,7 +10128,7 @@ Bitcoin.Util = {
             investorInput.classList.add('investor-input', 'grid')
             investorInput.innerHTML = `
                 <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
-                <sm-input placeholder="Amount(₹)" class="outlined" animate></sm-input>
+                <sm-input placeholder="Amount(₹)" type="number" class="outlined" animate></sm-input>
                 <button class="remove-investor" title="Remove this investor">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
                 </button>
