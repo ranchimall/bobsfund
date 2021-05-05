@@ -100,8 +100,8 @@ button {
   color: inherit;
   font-size: 0.9rem;
   font-weight: 500;
-  border-radius: 0.3rem;
-  padding: 0.4rem 0.6rem;
+  border-radius: 0.2rem;
+  padding: 0.5rem 0.6rem;
   -webkit-tap-highlight-color: transparent;
   border: none;
 }
@@ -495,6 +495,7 @@ sm-option {
   color: white;
   padding: 2rem 0 12rem 0;
   margin-bottom: -8rem;
+  background-image: url(../assets/bg-1.svg);
   background-color: var(--accent-color);
   background-size: cover;
 }
