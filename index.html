@@ -42,8 +42,7 @@
             </div>
         </div>
         <div id="current_price" class="grid gap-1 flow-column align-center">
-            <span id="btc-usd-rate" class="weight-700 hide-completely"></span>
-            <span id="btc-inr-rate" class="weight-700"></span>
+            <span id="btc-usd-rate" class="weight-700"></span>
             <span id="usd-rate" class="weight-700"></span>
         </div>
         <div class="dropdown">
@@ -70,7 +69,7 @@
             </ul>
         </div>
     </header>
-    <main id="home_page" class="page page-layout">
+    <main id="home_page" class="page page-layout hide-completely">
         <section id="homepage__hero-section" class="full-bleed page-layout">
             <h2 class="h2 weight-700 margin-bottom-1r">Bob's Fund<br>on FLO Blockchain</h2>
             <p>Bob's fund is 20 year long term Bitcoin price linked product. Investors are entitled to 100% of Bitcoin price gains, but they must hold for 20 years.</p>
@@ -88,7 +87,7 @@
             <h4>No bonds found</h4>
         </div>
     </main>
-    <article id="add_bond_page" class="page page-layout hide-completely">
+    <article id="add_bond_page" class="page page-layout">
         <header class="flex margin-top-1-5 align-center margin-bottom-1-5r">
             <button onclick="showPage('home_page')">
                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M7.828 11H20v2H7.828l5.364 5.364-1.414 1.414L4 12l7.778-7.778 1.414 1.414z"/></svg>
@@ -98,26 +97,49 @@
         <sm-tab-header target="admin_options" variant="tab">
             <sm-tab>Create Fund</sm-tab>
             <sm-tab>Create Term</sm-tab>
-            <sm-tab>Add investors</sm-tab>
         </sm-tab-header>
         <sm-tab-panels id="admin_options">
-            <form id="create_fund_fomr" class="grid gap-1-5">
-                <label class="grid gap-0-5">
-                    Fund start date
-                    <input type="date" name="start_date">
-                </label>
-                <label class="grid gap-0-5">
-                    Base BTC value ($)
-                    <input type="number" step="0.00000001" name="base" pattern="^[\d,]+.?\d$">
-                </label>
-                <label class="grid gap-0-5">
-                    Base USD rate (₹)
-                    <input type="number" name="usd_rate" step="0.01">
-                </label>
-                <div class="grid flow-column align-center gap-1 justify-start">
-                    <button type="submit" class="button--primary">Create Fund</button>
-                    <button type="reset">Clear</button>
+            <form id="create_fund_form" class="grid gap-1-5" onsubmit="return false">
+                <sm-switch id="fund_creation_toggle">
+                    <div class="flex" slot="left">
+                        Add investors to existing fund
+                    </div>
+                </sm-switch>
+                <section id="fund_details_form" class="grid gap-1-5 margin-bottom-0-5r">
+                    <label class="grid gap-0-5">
+                        Fund start date
+                        <input type="date" name="start_date">
+                    </label>
+                    <label class="grid gap-0-5">
+                        Base BTC value ($)
+                        <input type="number" step="0.00000001" name="base" pattern="^[\d,]+.?\d$">
+                    </label>
+                    <label class="grid gap-0-5">
+                        Base USD rate (₹)
+                        <input type="number" name="usd_rate" step="0.01">
+                    </label>
+                </section>
+
+                <h4>Add Investors</h4>
+                <div id="fund_selector_container" class="grid margin-bottom-0-5r hide-completely">
+                    <span class="margin-bottom-0-5r">Select Fund</span>
+                    <sm-select id="fund_selector"></sm-select>
                 </div>
+                <ul id="investors_input_list" class="grid gap-1">
+                    <li class="investor-input grid">
+                        <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
+                        <sm-input placeholder="Amount(₹)" class="outlined" animate></sm-input>
+                        <button class="remove-investor">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
+                        </button>
+                    </li>
+                </ul>
+                <button class="margin-bottom-1r justify-self-start" style="margin-top: -1rem;" onclick="renderInvestor()">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+                    Add new
+                </button>
+                <button id="add_investors_button" type="submit" class="button--primary justify-self-start hide-completely">Add Investors</button>
+                <button id="create_fund_button" type="submit" class="button--primary justify-self-start">Create Fund</button>
             </form>
             <form id="create_term_form" class="grid gap-1-5">
                 <label class="grid gap-0-5">
@@ -125,10 +147,10 @@
                     <input type="text" name="floid" pattern="[0-9a-zA-Z]{34}">
                 </label>
                 <label class="grid gap-0-5">
-                    Tapout window
+                    Maximum Duration
                     <div class="flex">
                         <input type="number" name="gi_pv">
-                        <sm-select id="gi_pt" align-select="right">
+                        <sm-select id="" align-select="right">
                             <sm-option value="year(s)" selected>year(s)</sm-option>
                             <sm-option value="month(s)">month(s)</sm-option>
                             <sm-option value="week(s)">week(s)</sm-option>
@@ -137,10 +159,22 @@
                     </div>
                 </label>
                 <label class="grid gap-0-5">
-                    Maximum Duration
+                    Tapout window
                     <div class="flex">
                         <input type="number" name="gi_pv">
-                        <sm-select id="gi_pt" align-select="right">
+                        <sm-select id="" align-select="right">
+                            <sm-option value="year(s)" selected>year(s)</sm-option>
+                            <sm-option value="month(s)">month(s)</sm-option>
+                            <sm-option value="week(s)">week(s)</sm-option>
+                            <sm-option value="day(s)">day(s)</sm-option>
+                        </sm-select>
+                    </div>
+                </label>
+                <label class="grid gap-0-5">
+                    Tapout interval(Use comma serated values. e.g. 10, 15...)
+                    <div class="flex">
+                        <input type="text" name="tapout-interval">
+                        <sm-select id="" align-select="right">
                             <sm-option value="year(s)" selected>year(s)</sm-option>
                             <sm-option value="month(s)">month(s)</sm-option>
                             <sm-option value="week(s)">week(s)</sm-option>
@@ -151,20 +185,6 @@
                 <label class="grid gap-0-5">
                    Fee
                     <input type="number" name="fee" min=0 value="0">
-                </label>
-                <div class="grid flow-column align-center gap-1 justify-start">
-                    <button type="submit" class="button--primary">Add Bond</button>
-                    <button type="reset">Clear</button>
-                </div>
-            </form>
-            <form id="add-bond-form" class="grid gap-1-5">
-                <label class="grid gap-0-5">
-                    FLO ID
-                    <input type="text" name="floid" pattern="[0-9a-zA-Z]{34}">
-                </label>
-                <label class="grid gap-0-5">
-                    Amount (₹)
-                    <input type="text" name="amount" pattern="\d.+">
                 </label>
                 <div class="grid flow-column align-center gap-1 justify-start">
                     <button type="submit" class="button--primary">Add Bond</button>
@@ -8229,7 +8249,7 @@ Bitcoin.Util = {
         </div>
         <div class="grid flow-column gap-1-5 space-between">
             <div class="transaction-column">
-                <span class="label">Amount intvested</span>
+                <span class="label">Intvested</span>
                 <span class="value amount-invested"></span>
             </div>
             <div class="transaction-column">
@@ -8323,6 +8343,7 @@ Bitcoin.Util = {
         --border-radius: 0.3rem;
         --padding: 0.7rem 1rem;
         --background: rgba(var(--text-color), 0.06);
+        --active-placeholder-color: var(--accent-color);
     }
     .hide{
     opacity: 0 !important;
@@ -8451,14 +8472,14 @@ Bitcoin.Util = {
         padding: 0 0.5rem;
     }
     :host(.outlined) .animate-label .label {
-        -webkit-transform: translate(0.1rem, -1.5rem) scale(0.8);
-                -ms-transform: translate(0.1rem, -1.5rem) scale(0.8);
-            transform: translate(0.1rem, -1.5rem) scale(0.8);
+        -webkit-transform: translate(0.1rem, -1.3rem) scale(0.8);
+                -ms-transform: translate(0.1rem, -1.3rem) scale(0.8);
+            transform: translate(0.1rem, -1.3rem) scale(0.8);
         opacity: 1;
         background: rgba(var(--foreground-color), 1);
     }
     .animate-label:focus-within:not(.readonly) .label{
-        color: var(--accent-color)
+        color: var(--active-placeholder-color);
     }
     .feedback-text{
         font-size: 0.9rem;
@@ -8925,6 +8946,7 @@ Bitcoin.Util = {
                     this.availableOptions.forEach(option => {
                         if(option.hasAttribute('selected')){
                             this.optionText.textContent = option.textContent
+                            this.setAttribute('value', option.getAttribute('value'))
                             option.classList.add('check-selected')
                             previousOption = option
                         }
@@ -9231,7 +9253,11 @@ Bitcoin.Util = {
         dispatch = () => {
             this.dispatchEvent(new CustomEvent('change', {
                 bubbles: true,
-                composed: true
+                composed: true,
+                detail: {
+                    value: this.isChecked,
+                    checked: this.isChecked
+                }
             }))
         }
 
@@ -10098,6 +10124,18 @@ Bitcoin.Util = {
             }
             fundBlock.querySelector('.tapout-list').append(tapoutsFrag)
             return fundBlock;
+        },
+        investorInput(){
+            const investorInput = document.createElement('li')
+            investorInput.classList.add('investor-input', 'grid')
+            investorInput.innerHTML = `
+                <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
+                <sm-input placeholder="Amount(₹)" class="outlined" animate></sm-input>
+                <button class="remove-investor" title="Remove this investor">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
+                </button>
+            `
+            return investorInput
         }
     }
 
@@ -10244,47 +10282,27 @@ Bitcoin.Util = {
     }
 
 
-   let preferredCurrency
+    let preferredCurrency
    const currencySymbols = {
        usd: '$',
        inr: '₹'
    }
     if(localStorage.getItem('preferred-currency')){
-        if(localStorage.getItem('preferred-currency') === 'inr')
-        {
-            showCurrentPrices()
-        }
-        else{
-            showCurrentPrices()
-        }
         preferredCurrency = localStorage.getItem('preferred-currency')
         document.querySelector(`sm-option[value="${localStorage.getItem('preferred-currency')}"]`).setAttribute('selected', '')
     }
     else{
+        preferredCurrency = 'inr'
         localStorage.setItem('preferred-currency', 'inr')
         getRef('currency_selector').value = 'INR'
+        document.querySelector(`sm-option[value="inr"]`).setAttribute('selected', '')
     }
-
 
     getRef('currency_selector').addEventListener('change', e => {
         preferredCurrency = e.detail.value
         localStorage.setItem('preferred-currency', e.detail.value)
         document.querySelectorAll('fund-investor').forEach(bond => bond.toggleCurrency())
-        showCurrentPrices()
     })
-    
-    function showCurrentPrices(){
-        if(preferredCurrency === 'inr'){
-            getRef('usd-rate').classList.remove('hide-completely')
-            getRef('btc-usd-rate').classList.add('hide-completely')
-            getRef('btc-inr-rate').classList.remove('hide-completely')
-        }
-        else if(preferredCurrency === 'usd'){
-            getRef('usd-rate').classList.add('hide-completely')
-            getRef('btc-usd-rate').classList.remove('hide-completely')
-            getRef('btc-inr-rate').classList.add('hide-completely')
-        }
-    }
 
     let isDropdownOpen = false
     
@@ -10341,6 +10359,9 @@ Bitcoin.Util = {
     function showPage(target){
         document.querySelectorAll('.page').forEach(page => page.classList.add('hide-completely'))
         getRef(target).classList.remove('hide-completely')
+        if(target === 'home_page'){
+            clearAddedInvestors()
+        }
     }
 
     let allInvestors
@@ -10367,6 +10388,49 @@ Bitcoin.Util = {
         }, 100)
     })
 
+    getRef('investors_input_list').addEventListener('click', e => {
+        if(e.target.closest('.remove-investor')){
+            e.target.closest('.investor-input').remove()
+        }
+    })
+
+    function renderInvestor(){
+        getRef('investors_input_list').append(render.investorInput())
+        getRef('investors_input_list').lastElementChild.scrollIntoView()
+        getRef('investors_input_list').lastElementChild.children[0].focusIn()
+    }
+
+    function clearAddedInvestors(){
+        getRef('investors_input_list').innerHTML = ``
+        getRef('investors_input_list').append(render.investorInput())
+    }
+    
+    function getAddedInvestors(){
+        const allInvestorsInput =  getRef('investors_input_list').querySelectorAll('.investor-input')
+        const addedInvestors = {}
+        allInvestorsInput.forEach(investor => {
+            const floId = investor.children[0].value
+            const amount = investor.children[1].value
+            addedInvestors[floId] = amount
+        })
+        return addedInvestors
+    }
+
+    getRef('fund_creation_toggle').addEventListener('change', e => {
+        if(e.detail.checked){
+            getRef('fund_details_form').classList.add('hide-completely')
+            getRef('create_fund_button').classList.add('hide-completely')
+            getRef('add_investors_button').classList.remove('hide-completely')
+            getRef('fund_selector_container').classList.remove('hide-completely')
+        }
+        else{
+            getRef('fund_details_form').classList.remove('hide-completely')
+            getRef('create_fund_button').classList.remove('hide-completely')
+            getRef('add_investors_button').classList.add('hide-completely')
+            getRef('fund_selector_container').classList.add('hide-completely')
+        }
+    })
+
 </script>
 <script>
     function onLoadStartUp() {
@@ -10386,7 +10450,6 @@ Bitcoin.Util = {
             console.log(`USD rate: ${USD_current} INR\nBTC rate: ${BTC_current} USD`);
             getRef("usd-rate").textContent = `USD: ₹${rates.USD_INR.toFixed(2)}`;
             getRef("btc-usd-rate").textContent = `BTC: $${rates.BTC_USD.toFixed(2)}`;
-            getRef("btc-inr-rate").textContent = `BTC: ₹${rates.BTC_INR.toFixed(2)}`;
             getRef('fund_list').innerHTML = '';
             compactIDB.readAllData("terms").then(terms => {
                 for (let floID in terms) {
@@ -10565,6 +10628,8 @@ Bitcoin.Util = {
         }
 
         console.info(term);
+        const fundsFrag = document.createDocumentFragment()
+
         for (let k in funds) {
             let f = parseFunds(funds[k]);
             console.info(f);
@@ -10585,10 +10650,22 @@ Bitcoin.Util = {
                 tapouts
             }
 
+            // Creating fund selection options
+            const smOption = document.createElement('sm-option')
+            smOption.innerHTML = `
+            <div class="grid gap-0-5">
+                <span>Start date: ${fundObj.startDate}</span>
+                <span>Base BTC: $${fundObj.baseBtc} | Base USD: ₹${fundObj.baseUsd}</span>
+            </div>    
+            `
+            smOption.setAttribute('value', funds[k][0].txid)
+            fundsFrag.append(smOption)
+
             const fundBlock = render.fundBlock(fundObj).firstElementChild
             const fundList = fundBlock.querySelector('.investors-list')
             
             const investorsFrag = document.createDocumentFragment() 
+
             f.amounts.forEach(a => {
                 let investor = a[0],
                     amount = a[1],
@@ -10619,6 +10696,8 @@ Bitcoin.Util = {
             getRef('fund_list').append(fundBlock);
         }
         allInvestors = document.querySelectorAll('fund-investor')
+        getRef('fund_selector').innerHTML = ''
+        getRef('fund_selector').append(fundsFrag)
     }
 
     function parseFunds(data) {

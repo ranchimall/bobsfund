@@ -8,7 +8,7 @@
     font-size: clamp(1rem, 1.2vmax, 3rem);
 }
 body {
-    --accent-color: #3320b1;
+    --accent-color: #2353FF;
     --light-shade: rgba(var(--text-color), 0.06);
     --text-color: 17, 17, 17;
     --text-color-light: 100, 100, 100;
@@ -20,7 +20,7 @@ body {
     background: var(--background-color);
 }
 body[data-theme='dark']{
-    --accent-color: #230eb1;
+    --accent-color: #2353FF;
     --green: #13ff5a;
     --text-color: 240, 240, 240;
     --text-color-light: 170, 170, 170;
@@ -29,6 +29,9 @@ body[data-theme='dark']{
     --error-color: rgb(255, 106, 106);
     ::-webkit-calendar-picker-indicator {
         filter: invert(1);
+    }
+    sm-input.outlined{
+        --active-placeholder-color: rgba(var(--text-color), 1);
     }
 }
 
@@ -366,11 +369,9 @@ sm-option{
 .dropdown__panel{
     position: absolute;
     display: grid;
-    gap: 2rem;
     left: 0;
     right: 0;
     top: 100%;
-    padding: 1rem;
     margin: 0 1rem;
     margin-top: 0.5rem;
     border-radius: 0.3rem;
@@ -380,6 +381,9 @@ sm-option{
     width: min(24rem, calc(100vw - 2rem));
     background-color: rgba(var(--foreground-color), 1);
     box-shadow: 0 2rem 2rem -0.5rem rgba($color: #000000, $alpha: 0.16);
+    li{
+        padding: 1rem;
+    }
 }
 
 #profile_button{
@@ -522,16 +526,24 @@ form{
     input{
         display: inline-flex;
         color: inherit;
+        font-family: inherit;
         padding: 0.6rem;
         border: none;
-        box-shadow: 0 0 0 1px rgba(var(--text-color), 0.6);
-        background-color: rgba(var(--text-color), 0.1);
+        box-shadow: 0 0 0 1px rgba(var(--text-color), 0.3);
+        background-color: rgba(var(--text-color), 0.06);
         flex: 1;
     }
     select option{
         color: inherit;
         background-color: rgba(var(--text-color), 0.1);
     }
+}
+
+.investor-input{
+    gap: 0.5rem;
+}
+.remove-investor{
+    grid-area: close;
 }
 
 
@@ -565,6 +577,10 @@ form{
         grid-template-columns: auto 1fr;
         grid-template-areas: '. .' 'search search';
     }
+    .investor-input{
+        grid-template-columns: 1fr auto;
+        grid-template-areas: '. close' '. close';
+    }
 }
 
 
@@ -592,10 +608,17 @@ form{
     .fund-block__details{
         grid-template-columns: 1fr 1fr;
     }
+    .investor-input{
+        grid-template-columns: 1.5fr 1fr auto;
+        grid-template-areas: '. . close';
+    }
 }
 @media only screen and (min-width: 1280px) {
     .page-layout{
         grid-template-columns: 1fr 90vw 1fr;
+    }
+    .multi-form{
+        grid-template-columns: 1fr 1fr;
     }
 }
 @media (any-hover: hover){
