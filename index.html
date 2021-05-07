@@ -63,18 +63,18 @@
                         <div slot="left" class="flex weight-700">Dark theme</div>
                     </sm-switch>
                 </li>
-                <li class="interact weight-700" onclick="showPage('add_bond_page')">
+                <li class="interact weight-700" onclick="showPage('admin_page')">
                     Admin panel
                 </li>
             </ul>
         </div>
     </header>
-    <main id="home_page" class="page page-layout hide-completely">
+    <main id="home_page" class="page page-layout">
         <section id="homepage__hero-section" class="full-bleed page-layout">
             <h2 class="h2 weight-700 margin-bottom-1r">Bob's Fund<br>on FLO Blockchain</h2>
             <p>Bob's fund is 20 year long term Bitcoin price linked product. Investors are entitled to 100% of Bitcoin price gains, but they must hold for 20 years.</p>
         </section>
-        <header class="bond-list__header grid margin-bottom-1-5r">
+        <header class="fund-list__header grid margin-bottom-1-5r">
             <h3 class="h3">Funds</h3>
             <sm-input id="search_investor" type="search" placeholder="Search investor with FLO ID">
                 <svg slot="icon" class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977 6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0 4.875-1.975l.15-.15z"/></svg>
@@ -82,12 +82,12 @@
             <button id="refresh-btn" class="justify-right button--primary">Refresh</button>
         </header>
         <ul id="fund_list"></ul>
-        <div id="bond_list__empty-state" class="grid hide-completely">
+        <div id="fund_list__empty-state" class="grid hide-completely">
             <svg class="icon icon--big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-4-6h8v2H8v-2zm0-3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
             <h4>No bonds found</h4>
         </div>
     </main>
-    <article id="add_bond_page" class="page page-layout">
+    <article id="admin_page" class="page page-layout hide-completely">
         <header class="flex margin-top-1-5 align-center margin-bottom-1-5r">
             <button onclick="showPage('home_page')">
                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M7.828 11H20v2H7.828l5.364 5.364-1.414 1.414L4 12l7.778-7.778 1.414 1.414z"/></svg>
@@ -105,6 +105,10 @@
                         Add investors to existing fund
                     </div>
                 </sm-switch>
+                <div id="term_selector_container" class="grid">
+                    <span class="margin-bottom-0-5r">Select Term</span>
+                    <sm-select id="term_selector"></sm-select>
+                </div>
                 <section id="fund_details_form" class="grid gap-1-5 margin-bottom-0-5r">
                     <label class="grid gap-0-5">
                         Fund start date
@@ -120,11 +124,11 @@
                     </label>
                 </section>
 
-                <h4>Add Investors</h4>
                 <div id="fund_selector_container" class="grid margin-bottom-0-5r hide-completely">
                     <span class="margin-bottom-0-5r">Select Fund</span>
                     <sm-select id="fund_selector"></sm-select>
                 </div>
+                <h4>Add Investors</h4>
                 <ul id="investors_input_list" class="grid gap-1">
                     <li class="investor-input grid">
                         <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
@@ -144,12 +148,12 @@
             <form id="create_term_form" class="grid gap-1-5">
                 <label class="grid gap-0-5">
                     Authorization FLO ID
-                    <input type="text" name="floid" pattern="[0-9a-zA-Z]{34}">
+                    <input type="text" name="floid" pattern="[0-9a-zA-Z]{34}" required>
                 </label>
                 <div class="grid gap-0-5">
                     Maximum Duration
                     <div class="flex">
-                        <input type="number" name="max_pv">
+                        <input type="number" name="max_pv" inputmode="numeric" required>
                         <sm-select id="max_pt" align-select="right">
                             <sm-option value="year(s)" selected>year(s)</sm-option>
                             <sm-option value="month(s)">month(s)</sm-option>
@@ -161,7 +165,7 @@
                 <div class="grid gap-0-5">
                     Tapout window
                     <div class="flex">
-                        <input type="number" name="tap_wv">
+                        <input type="number" name="tap_wv" inputmode="numeric" required>
                         <sm-select id="tap_wt" align-select="right">
                             <sm-option value="year(s)">year(s)</sm-option>
                             <sm-option value="month(s)" selected>month(s)</sm-option>
@@ -173,7 +177,7 @@
                 <div class="grid gap-0-5">
                     Tapout interval(Use comma serated values. e.g. 10, 15...)
                     <div class="flex">
-                        <input type="text" name="tap_iv">
+                        <input type="text" name="tap_iv" required>
                         <sm-select id="tap_it" align-select="right">
                             <sm-option value="year(s)" selected>year(s)</sm-option>
                             <sm-option value="month(s)">month(s)</sm-option>
@@ -182,7 +186,7 @@
                 </div>
                 <label class="grid gap-0-5">
                    Fee
-                    <input type="number" name="fee" min=0 value="0">
+                    <input type="number" name="fee" min=0 value="0" inputmode="numeric" required>
                 </label>
                 <div class="grid flow-column align-center gap-1 justify-start">
                     <button type="submit" class="button--primary">Add Bond</button>
@@ -191,7 +195,22 @@
             </form>
         </sm-tab-panels>
     </article>
-
+    <article id="confirm_term_page" class="page page-layout hide-completely">
+        <header class="flex margin-top-1-5 align-center margin-bottom-1-5r">
+            <button class="back-button" onclick="showPage('admin_page')">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M7.828 11H20v2H7.828l5.364 5.364-1.414 1.414L4 12l7.778-7.778 1.414 1.414z"/></svg>
+            </button>
+            <h3>Confirm Details</h3>
+        </header>
+        <form class="grid gap-1-5" onsubmit="return false">
+            <section id="term_details"></section>
+            <div class="grid">
+                <h4 class="weight-400 margin-bottom-1r" id="admin_id"></h4>
+                <sm-input id="get_private_key" type="password" placeholder="Private key"></sm-input>
+            </div>
+            <button id="create_term_button" type="submit" class="button--primary justify-self-start">Create term</button>
+        </form>
+    </article>
 
 
 <script id="init_lib" version="1.0.1">
@@ -10079,14 +10098,13 @@ Bitcoin.Util = {
                 <span class="value margin-bottom-0-5r">Tapouts</span>
                 <ul class="tapout-list flex gap-1-5"></ul>
             </div>
-            <div class="grid flow-column gap-1 align-end">
-                <a class="term-link" target="_blank">See terms on Blockchain</a>
-                <a class="fund-link" target="_blank">See fund on Blockchain</a>
+            <div class="grid flow-column gap-1 align-end justify-end">
+                <a class="term-link" target="_blank">See terms</a>
             </div>
         </div>
         <div class="grid margin-top-1-5">
             <h4>Investors</h4>
-            <ul class="investors-list"></ul>
+            <ul class="investors-group-list"></ul>
         </div>
     </li>
     `
@@ -10104,7 +10122,6 @@ Bitcoin.Util = {
             } = obj
             const fundBlock = fundBlockTemplate.content.cloneNode(true)
             fundBlock.querySelector('.term-link').href = termTxHref
-            fundBlock.querySelector('.fund-link').href = fundTxHref
             fundBlock.querySelector('.start-date').textContent = startDate
             fundBlock.querySelector('.end-date').textContent = endDate
             fundBlock.querySelector('.base-usd').textContent = `₹${baseUsd}`
@@ -10134,6 +10151,24 @@ Bitcoin.Util = {
                 </button>
             `
             return investorInput
+        },
+        fundPlaceholder(){
+            const bond = document.createElement('li')
+            bond.classList.add('fund-placeholder', 'grid')
+            bond.innerHTML = `
+                <div class="flex-grid justify-start">
+                    <div class="placeholder__block"></div>
+                    <div class="placeholder__block"></div>
+                    <div class="placeholder__block"></div>
+                    <div class="placeholder__block"></div>
+                </div>
+                <div class="grid flow-column gap-1">
+                    <div class="placeholder__block"></div>
+                    <div class="placeholder__block"></div>
+                </div>
+                <div class="placeholder__block justify-self-end"></div>
+            `
+            return bond
         }
     }
 
@@ -10360,31 +10395,28 @@ Bitcoin.Util = {
         if(target === 'home_page'){
             clearAddedInvestors()
         }
+        if(target !== 'confirm_term_page'){
+            getRef('get_private_key').value = ''
+        }
+        if(target === 'home_page'){
+            getRef("create_term_form").reset()
+        }
     }
 
     let allInvestors
     getRef('search_investor').addEventListener('input', e => {
         throttle(() => {
-            let hiddenElements = 0
             allInvestors.forEach( child => {
                 if(child.dataset.floId.toLowerCase().includes(getRef('search_investor').value.toLowerCase())){
                     child.classList.remove('hide-completely')
                 }
                 else{
                     child.classList.add('hide-completely')
-                    hiddenElements++
                 }
             })
-            console.log(hiddenElements)
-/*            
-            if(hiddenElements === getRef('bond_list').children.length){
-                getRef('bond_list__empty-state').classList.remove('hide-completely')
-            }
-            else{
-                getRef('bond_list__empty-state').classList.add('hide-completely')
-            } */
         }, 100)
     })
+
 
     getRef('investors_input_list').addEventListener('click', e => {
         if(e.target.closest('.remove-investor')){
@@ -10428,9 +10460,24 @@ Bitcoin.Util = {
             getRef('fund_selector_container').classList.add('hide-completely')
         }
     })
+    function renderfundPlaceholder(){
+        getRef('fund_list').innerHTML = ``
+        const frag = document.createDocumentFragment()
+        for (let index = 0; index < 4; index++) {
+            frag.append(render.fundPlaceholder())            
+        }
+        getRef('fund_list').append(frag)
+    }
+
+    getRef('term_selector').addEventListener('change', e => {
+        const floID = e.detail.value
+        getRef('fund_selector').querySelectorAll('.term-fund__option-group').forEach(option => option.classList.add('hide-completely'))
+        getRef('fund_selector').querySelector(`.term-fund__option-group[data-flo-id="${floID}"]`).classList.remove('hide-completely')
+    })
 
 </script>
 <script>
+    renderfundPlaceholder()
     function onLoadStartUp() {
         compactIDB.initDB(floGlobals.application, {
                 terms: {},
@@ -10442,6 +10489,7 @@ Bitcoin.Util = {
 
     const refreshBtn = document.getElementById('refresh-btn');
     refreshBtn.addEventListener("click", evt => {
+        renderfundPlaceholder()
         getCurrentRates().then(rates => {
             USD_current = rates.USD_INR;
             BTC_current = rates.BTC_USD;
@@ -10449,25 +10497,47 @@ Bitcoin.Util = {
             getRef("usd-rate").textContent = `USD: ₹${rates.USD_INR.toFixed(2)}`;
             getRef("btc-usd-rate").textContent = `BTC: $${rates.BTC_USD.toFixed(2)}`;
             getRef('fund_list').innerHTML = '';
+            getRef('fund_selector').innerHTML = ''
+            
+            const termsFrag = document.createDocumentFragment()
+            
             compactIDB.readAllData("terms").then(terms => {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
+                    console.log(term)
+
+                    // Creating fund selection options
+                    const smOption = document.createElement('sm-option')
+                    smOption.innerHTML = `
+                    <div class="grid gap-0-5">
+                        <span class="breakable">(${term.floID})</span>
+                        <span>Max period: ${term.maxPeriod} years</span>
+                        <span>Tapout: ${term.tapoutInterval.join(', ')} years</span>
+                        <span>Fee: ${term.fee}</span>
+                    </div>    
+                    `
+                    smOption.setAttribute('value', term.floID)
+                    termsFrag.append(smOption)
+
                     compactIDB.searchData("funds", {
-                            lowerKey: floID + "|",
-                            upperKey: floID + "||"
-                        }).then(funds => renderFunds(term, funds))
-                        .catch(error => console.error(error))
+                        lowerKey: floID + "|",
+                        upperKey: floID + "||"
+                    })
+                    .then(funds => renderFunds(term, funds))
+                    .catch(error => console.error(error))
                     getFundsFromBlockchain(floID)
                         .then(funds => renderFunds(term, funds))
                         .catch(error => console.error(error))
                 }
+                getRef('term_selector').innerHTML = ``
+                getRef('term_selector').append(termsFrag)
             }).catch(error => console.error(error));
             getTermsFromBlockchain().then(terms => {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
                     getFundsFromBlockchain(floID)
-                        .then(funds => renderFunds(term, funds))
-                        .catch(error => console.error(error))
+                    .then(funds => renderFunds(term, funds))
+                    .catch(error => console.error(error))
                 }
             }).catch(error => console.error(error))
         }).catch(error => console.error(error))
@@ -10660,11 +10730,21 @@ Bitcoin.Util = {
             fundsFrag.append(smOption)
 
             const fundBlock = render.fundBlock(fundObj).firstElementChild
-            const fundList = fundBlock.querySelector('.investors-list')
+            const fundList = fundBlock.querySelector('.investors-group-list')
 
             const investorsFrag = document.createDocumentFragment()
 
             for (let i in f.amounts) {
+                const investorGroup = document.createElement('li')
+                investorGroup.classList.add('investor-group')
+                investorGroup.innerHTML = `
+                    <header class="flex space-between align-center">
+                        <h4 class="weight-500 color-0-8">Transaction group</h4>
+                        <a class="fund-link" href="https://livenet.flocha.in/tx/${funds[k][i].txid}" target="_blank">See transaction</a>   
+                    </header>
+                    <ul class="investor-group__list"></ul>
+                `
+
                 f.amounts[i].forEach(a => {
                     let investor = a[0],
                         amount = a[1],
@@ -10683,8 +10763,9 @@ Bitcoin.Util = {
                     }
                     const investorCard = document.createElement('fund-investor')
                     investorCard.data = obj
-                    investorsFrag.append(investorCard)
+                    investorGroup.querySelector('.investor-group__list').append(investorCard)
                 });
+                investorsFrag.append(investorGroup)
                 // *** txid for these investors: funds[k][i].txid
             }
             fundList.append(investorsFrag)
@@ -10697,8 +10778,12 @@ Bitcoin.Util = {
             getRef('fund_list').append(fundBlock);
         }
         allInvestors = document.querySelectorAll('fund-investor')
-        getRef('fund_selector').innerHTML = ''
-        getRef('fund_selector').append(fundsFrag)
+        
+        const fundGroup = document.createElement('section')
+        fundGroup.dataset.floId = term.floID
+        fundGroup.classList.add('hide-completely', 'term-fund__option-group')
+        fundGroup.append(fundsFrag)
+        getRef('fund_selector').append(fundGroup)
     }
 
     function parseFunds(data) {
@@ -10834,20 +10919,34 @@ Bitcoin.Util = {
         ].join("|");
     }
 
-    document.getElementById("create_term_form").addEventListener("submit", evt => {
+    getRef("create_term_form").addEventListener("submit", evt => {
         evt.preventDefault();
         let f = evt.target;
         let tap_it = getRef("tap_it").value
         let tapoutInterval = f["tap_iv"].value.split(",").map(v => v.trim() + " " + tap_it);
         let termStr = createTermString(f["floid"].value, f["max_pv"].value + " " + getRef("max_pt").value, f["tap_wv"].value + " " + getRef("tap_wt").value, tapoutInterval)
         console.log(termStr)
-        if (!confirm(termStr.replace(/\|/g, "\n") + "\n\nDo you want to continue?"))
-            return;
-        privKey = prompt(termStr + `\n\nEnter Private key of adminID (${floGlobals.adminID})`);
-        floBlockchainAPI.writeData(floGlobals.adminID, termStr, privKey, f["floid"].value).then(result => {
-            console.log(result)
-            alert("Term Added!")
-        }).catch(error => console.error(error))
+
+        getRef('term_details').innerHTML = termStr.replace(/\|/g, "<br>")
+        getRef('admin_id').innerHTML = `Enter Private key of adminID <h5 class="weight-400">${floGlobals.adminID}</h5>`
+        showPage('confirm_term_page')
+
+        // bond_details = prompt(bondStr + `\n\nEnter Private key of adminID (${floGlobals.adminID})`);
+        
+        getRef('create_term_button').onclick = () => {
+            const privKey = getRef('get_private_key').value
+            if (!floCrypto.verifyPrivKey(privKey, floGlobals.adminID)){
+                notify("Access Denied! incorrect private key", 'error');
+                return
+            }
+            console.log(bondStr);
+            floBlockchainAPI.writeData(floGlobals.adminID, termStr, privKey, f["floid"].value).then(result => {
+                console.log(result);
+                showPage('admin_page')
+                notify("Term added in blockchain", 'success');
+                getRef("create_term_form").reset()
+            }).catch(error => console.error(error))
+        }
     })
 </script>
 
