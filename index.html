@@ -149,8 +149,8 @@
                 <div class="grid gap-0-5">
                     Maximum Duration
                     <div class="flex">
-                        <input type="number" name="gi_pv">
-                        <sm-select id="" align-select="right">
+                        <input type="number" name="max_pv">
+                        <sm-select id="max_pt" align-select="right">
                             <sm-option value="year(s)" selected>year(s)</sm-option>
                             <sm-option value="month(s)">month(s)</sm-option>
                             <sm-option value="week(s)">week(s)</sm-option>
@@ -161,10 +161,10 @@
                 <div class="grid gap-0-5">
                     Tapout window
                     <div class="flex">
-                        <input type="number" name="gi_pv">
-                        <sm-select id="" align-select="right">
-                            <sm-option value="year(s)" selected>year(s)</sm-option>
-                            <sm-option value="month(s)">month(s)</sm-option>
+                        <input type="number" name="tap_wv">
+                        <sm-select id="tap_wt" align-select="right">
+                            <sm-option value="year(s)">year(s)</sm-option>
+                            <sm-option value="month(s)" selected>month(s)</sm-option>
                             <sm-option value="week(s)">week(s)</sm-option>
                             <sm-option value="day(s)">day(s)</sm-option>
                         </sm-select>
@@ -173,8 +173,8 @@
                 <div class="grid gap-0-5">
                     Tapout interval(Use comma serated values. e.g. 10, 15...)
                     <div class="flex">
-                        <input type="text" name="tapout-interval">
-                        <sm-select id="" align-select="right">
+                        <input type="text" name="tap_iv">
+                        <sm-select id="tap_it" align-select="right">
                             <sm-option value="year(s)" selected>year(s)</sm-option>
                             <sm-option value="month(s)">month(s)</sm-option>
                         </sm-select>
@@ -10640,7 +10640,7 @@ Bitcoin.Util = {
             })
             const fundObj = {
                 termTxHref: `https://livenet.flocha.in/tx/${term.txid}`,
-                fundTxHref: `https://livenet.flocha.in/tx/${funds[k].map(fd => fd.txid)}`,
+                fundTxHref: `https://livenet.flocha.in/tx/${funds[k][0].txid}`,
                 startDate: dateFormat(f.start_date),
                 endDate: dateFormat(dateAdder(startDate, term["maxPeriod"])),
                 baseUsd: f.USD_base,
@@ -10661,36 +10661,39 @@ Bitcoin.Util = {
 
             const fundBlock = render.fundBlock(fundObj).firstElementChild
             const fundList = fundBlock.querySelector('.investors-list')
-            
-            const investorsFrag = document.createDocumentFragment() 
 
-            f.amounts.forEach(a => {
-                let investor = a[0],
-                    amount = a[1],
-                    netVal = calcNetValue(f.BTC_base, f.USD_base, f.start_date, amount, term.fee);
-                console.info(investor, amount, netVal);
-                const obj = {
-                    floId: investor,
-                    amountInvested: {
-                        inr: amount.toFixed(2),
-                        usd: (amount / f.USD_base).toFixed(2),
-                    },
-                    netValue: {
-                        inr: netVal.toFixed(2),
-                        usd: (netVal / USD_current).toFixed(2),
+            const investorsFrag = document.createDocumentFragment()
+
+            for (let i in f.amounts) {
+                f.amounts[i].forEach(a => {
+                    let investor = a[0],
+                        amount = a[1],
+                        netVal = calcNetValue(f.BTC_base, f.USD_base, f.start_date, amount, term.fee);
+                    console.info(investor, amount, netVal);
+                    const obj = {
+                        floId: investor,
+                        amountInvested: {
+                            inr: amount.toFixed(2),
+                            usd: (amount / f.USD_base).toFixed(2),
+                        },
+                        netValue: {
+                            inr: netVal.toFixed(2),
+                            usd: (netVal / USD_current).toFixed(2),
+                        }
                     }
-                }
-                const investorCard = document.createElement('fund-investor')
-                investorCard.data = obj
-                investorsFrag.append(investorCard)
-            });
+                    const investorCard = document.createElement('fund-investor')
+                    investorCard.data = obj
+                    investorsFrag.append(investorCard)
+                });
+                // *** txid for these investors: funds[k][i].txid
+            }
             fundList.append(investorsFrag)
             fundBlock.setAttribute("title", '--(Terms and condition)--\n' + term.data.replace(/\|/g, "\n") +
                 '\n\n--(Fund Details)--\n' + funds[k].map(fd => fd.data).join("\n-----\n")
                 .replace(/\|/g, "\n").replace(/:=/g, "\t:\t").replace(/{/g, "\n\t").replace(/},?/g, "").replace(/]/g, "\n]"));
             removeElementIfExist(k);
             fundBlock.id = k;
-            //add link to view tx in blockchain [1. term txn(variable = term.txid), 2. fund tnx {variable = funds[k].map(fd => fd.txid)}];
+            //add link to view term tx in blockchain [1. term txn(variable = term.txid)];
             getRef('fund_list').append(fundBlock);
         }
         allInvestors = document.querySelectorAll('fund-investor')
@@ -10733,10 +10736,12 @@ Bitcoin.Util = {
                         break;
                     case "fund invesments (inr)":
                         funds["amounts"] = funds["amounts"] || [];
+                        let tmp = [];
                         d[1].match(/\w{34}:=[\w ,.]+/gi).forEach(a => {
                             a = a.split(":=");
-                            funds["amounts"].push([a[0], parseNumber(a[1])]);
+                            tmp.push([a[0], parseNumber(a[1])]);
                         });
+                        funds["amounts"].push(tmp)
                         break;
                 }
             });
@@ -10828,6 +10833,22 @@ Bitcoin.Util = {
             `Bond issuing authorized FLO ID: ${floID}`
         ].join("|");
     }
+
+    document.getElementById("create_term_form").addEventListener("submit", evt => {
+        evt.preventDefault();
+        let f = evt.target;
+        let tap_it = getRef("tap_it").value
+        let tapoutInterval = f["tap_iv"].value.split(",").map(v => v.trim() + " " + tap_it);
+        let termStr = createTermString(f["floid"].value, f["max_pv"].value + " " + getRef("max_pt").value, f["tap_wv"].value + " " + getRef("tap_wt").value, tapoutInterval)
+        console.log(termStr)
+        if (!confirm(termStr.replace(/\|/g, "\n") + "\n\nDo you want to continue?"))
+            return;
+        privKey = prompt(termStr + `\n\nEnter Private key of adminID (${floGlobals.adminID})`);
+        floBlockchainAPI.writeData(floGlobals.adminID, termStr, privKey, f["floid"].value).then(result => {
+            console.log(result)
+            alert("Term Added!")
+        }).catch(error => console.error(error))
+    })
 </script>
 
 </body>
