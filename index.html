@@ -99,7 +99,7 @@
             <sm-tab>Create Term</sm-tab>
         </sm-tab-header>
         <sm-tab-panels id="admin_options">
-            <form id="create_fund_form" class="grid gap-1-5" onsubmit="return false">
+            <form id="create_fund_form" class="grid gap-1-5">
                 <sm-switch id="fund_creation_toggle">
                     <div class="flex" slot="left">
                         Add investors to existing fund
@@ -116,7 +116,7 @@
                     </label>
                     <label class="grid gap-0-5">
                         Base BTC value ($)
-                        <input type="number" step="0.00000001" name="base" pattern="^[\d,]+.?\d$">
+                        <input type="text" name="btc_base" pattern="[\d,]+.?\d">
                     </label>
                     <label class="grid gap-0-5">
                         Base USD rate (₹)
@@ -138,7 +138,7 @@
                         </button>
                     </li>
                 </ul>
-                <button class="margin-bottom-1r justify-self-start" style="margin-top: -1rem;" onclick="renderInvestor()">
+                <button type="button" class="margin-bottom-1r justify-self-start" style="margin-top: -1rem;" onclick="renderInvestor()">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
                     Add new
                 </button>
@@ -10437,11 +10437,11 @@ Bitcoin.Util = {
     
     function getAddedInvestors(){
         const allInvestorsInput =  getRef('investors_input_list').querySelectorAll('.investor-input')
-        const addedInvestors = {}
+        const addedInvestors = []
         allInvestorsInput.forEach(investor => {
             const floId = investor.children[0].value
             const amount = investor.children[1].value
-            addedInvestors[floId] = amount
+            addedInvestors.push([floId, amount])
         })
         return addedInvestors
     }
@@ -10478,6 +10478,7 @@ Bitcoin.Util = {
 </script>
 <script>
     renderfundPlaceholder()
+
     function onLoadStartUp() {
         compactIDB.initDB(floGlobals.application, {
                 terms: {},
@@ -10498,9 +10499,9 @@ Bitcoin.Util = {
             getRef("btc-usd-rate").textContent = `BTC: $${rates.BTC_USD.toFixed(2)}`;
             getRef('fund_list').innerHTML = '';
             getRef('fund_selector').innerHTML = ''
-            
+
             const termsFrag = document.createDocumentFragment()
-            
+
             compactIDB.readAllData("terms").then(terms => {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
@@ -10520,11 +10521,11 @@ Bitcoin.Util = {
                     termsFrag.append(smOption)
 
                     compactIDB.searchData("funds", {
-                        lowerKey: floID + "|",
-                        upperKey: floID + "||"
-                    })
-                    .then(funds => renderFunds(term, funds))
-                    .catch(error => console.error(error))
+                            lowerKey: floID + "|",
+                            upperKey: floID + "||"
+                        })
+                        .then(funds => renderFunds(term, funds))
+                        .catch(error => console.error(error))
                     getFundsFromBlockchain(floID)
                         .then(funds => renderFunds(term, funds))
                         .catch(error => console.error(error))
@@ -10536,8 +10537,8 @@ Bitcoin.Util = {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
                     getFundsFromBlockchain(floID)
-                    .then(funds => renderFunds(term, funds))
-                    .catch(error => console.error(error))
+                        .then(funds => renderFunds(term, funds))
+                        .catch(error => console.error(error))
                 }
             }).catch(error => console.error(error))
         }).catch(error => console.error(error))
@@ -10778,7 +10779,7 @@ Bitcoin.Util = {
             getRef('fund_list').append(fundBlock);
         }
         allInvestors = document.querySelectorAll('fund-investor')
-        
+
         const fundGroup = document.createElement('section')
         fundGroup.dataset.floId = term.floID
         fundGroup.classList.add('hide-completely', 'term-fund__option-group')
@@ -10814,7 +10815,7 @@ Bitcoin.Util = {
                         cont ? null : funds["start_date"] = d[1];
                         break;
                     case "base value":
-                        cont ? null : funds["BTC_base"] = parseFloat(d[1].slice(0, -4));
+                        cont ? null : funds["BTC_base"] = parseNumber(d[1].slice(0, -4));
                         break;
                     case "usd inr rate at start":
                         cont ? null : funds["USD_base"] = parseFloat(d[1]);
@@ -10875,28 +10876,20 @@ Bitcoin.Util = {
     }
 
     function createFundString(BTC_base, USD_base, start_date, funds) {
-        funds = funds.map(f => {
-            f = f.replace(":=", ":").split(":");
-            return `{${f[0].trim()}:=${f[1].trim()}}`
-        });
         return [
             floGlobals.productStr,
             `Base Value: ${BTC_base} USD`,
             `USD INR rate at start: ${USD_base}`,
             `Fund Start date: ${dateFormat(start_date)}`,
-            `Fund invesments (INR): [${funds.join(",")}]`
+            `Fund invesments (INR): [${funds.map(f => `{${f[0].trim()}:=${f[1].trim()}}`).join(",")}]`
         ].join("|");
     }
 
     function continueFund(fundID, funds) {
-        funds = funds.map(f => {
-            f = f.replace(":=", ":").split(":");
-            return `{${f[0].trim()}:=${f[1].trim()}}`
-        })
         return [
             floGlobals.productStr,
             "Continue: " + fundID,
-            `Fund invesments (INR): [${funds.join(",")}]`
+            `Fund invesments (INR): [${funds.map(f => `{${f[0].trim()}:=${f[1].trim()}}`).join(",")}]`
         ].join("|");
     }
 
@@ -10930,16 +10923,12 @@ Bitcoin.Util = {
         getRef('term_details').innerHTML = termStr.replace(/\|/g, "<br>")
         getRef('admin_id').innerHTML = `Enter Private key of adminID <h5 class="weight-400">${floGlobals.adminID}</h5>`
         showPage('confirm_term_page')
-
-        // bond_details = prompt(bondStr + `\n\nEnter Private key of adminID (${floGlobals.adminID})`);
-        
         getRef('create_term_button').onclick = () => {
             const privKey = getRef('get_private_key').value
-            if (!floCrypto.verifyPrivKey(privKey, floGlobals.adminID)){
+            if (!floCrypto.verifyPrivKey(privKey, floGlobals.adminID)) {
                 notify("Access Denied! incorrect private key", 'error');
                 return
             }
-            console.log(bondStr);
             floBlockchainAPI.writeData(floGlobals.adminID, termStr, privKey, f["floid"].value).then(result => {
                 console.log(result);
                 showPage('admin_page')
@@ -10947,6 +10936,26 @@ Bitcoin.Util = {
                 getRef("create_term_form").reset()
             }).catch(error => console.error(error))
         }
+    })
+
+    getRef("create_fund_form").addEventListener("submit", evt => {
+        evt.preventDefault();
+        let f = evt.target,
+            fStr;
+        let termId = getRef("term_selector").value
+        let investments = getAddedInvestors()
+        let createMod = !getRef("fund_creation_toggle").checked;
+        console.info(investments, termId)
+        if (createMod) //create new fund
+            fStr = createFundString(f["btc_base"].value, f["usd_rate"].value, f["start_date"].value, investments)
+        else //add investments to existing fund
+            fStr = continueFund(getRef("fund_selector").value, investments)
+        console.log(fStr);
+        let privKey = prompt(fStr + `\n\nEnter privateKey of ${termId}`);
+        floBlockchainAPI.writeData(termId, fStr, privKey, termId).then(result => {
+            console.info(result);
+            alert(createMod ? "New Fund created" : "Invesments added to fund")
+        }).catch(error => reject(error))
     })
 </script>
 
