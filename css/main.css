@@ -653,8 +653,10 @@ form select option {
   grid-area: close;
 }
 
-#term_details {
+#term_details,
+#fund_details {
   line-height: 1.7;
+  margin-bottom: 2rem;
 }
 
 .flex-grid {

@@ -112,15 +112,15 @@
                 <section id="fund_details_form" class="grid gap-1-5 margin-bottom-0-5r">
                     <label class="grid gap-0-5">
                         Fund start date
-                        <input type="date" name="start_date">
+                        <input type="date" id="start_date" required>
                     </label>
                     <label class="grid gap-0-5">
                         Base BTC value ($)
-                        <input type="text" name="btc_base" pattern="[\d,]+.?\d">
+                        <input type="text" id="btc_base" pattern="[\d,]+.?\d" required>
                     </label>
                     <label class="grid gap-0-5">
                         Base USD rate (₹)
-                        <input type="number" name="usd_rate" step="0.01">
+                        <input type="number" id="usd_rate" step="0.01" required>
                     </label>
                 </section>
 
@@ -203,12 +203,28 @@
             <h3>Confirm Details</h3>
         </header>
         <form class="grid gap-1-5" onsubmit="return false">
-            <section id="term_details"></section>
+            <section id="term_details" class="breakable"></section>
             <div class="grid">
-                <h4 class="weight-400 margin-bottom-1r" id="admin_id"></h4>
-                <sm-input id="get_private_key" type="password" placeholder="Private key"></sm-input>
+                <h4 class="weight-400 margin-bottom-1r" id="term_admin_id"></h4>
+                <sm-input id="get_term_private_key" type="password" placeholder="Private key"></sm-input>
             </div>
             <button id="create_term_button" type="submit" class="button--primary justify-self-start">Create term</button>
+        </form>
+    </article>
+    <article id="confirm_fund_page" class="page page-layout hide-completely">
+        <header class="flex margin-top-1-5 align-center margin-bottom-1-5r">
+            <button class="back-button" onclick="showPage('admin_page')">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M7.828 11H20v2H7.828l5.364 5.364-1.414 1.414L4 12l7.778-7.778 1.414 1.414z"/></svg>
+            </button>
+            <h3>Confirm Details</h3>
+        </header>
+        <form class="grid gap-1-5" onsubmit="return false">
+            <section id="fund_details" class="breakable"></section>
+            <div class="grid">
+                <h4 class="weight-400 margin-bottom-1r" id="fund_admin_id"></h4>
+                <sm-input id="get_fund_private_key" type="password" placeholder="Private key"></sm-input>
+            </div>
+            <button id="confirm_fund_button" type="submit" class="button--primary justify-self-start">Create Fund</button>
         </form>
     </article>
 
@@ -10396,10 +10412,12 @@ Bitcoin.Util = {
             clearAddedInvestors()
         }
         if(target !== 'confirm_term_page'){
-            getRef('get_private_key').value = ''
+            getRef('get_term_private_key').value = ''
+            getRef('get_fund_private_key').value = ''
         }
         if(target === 'home_page'){
             getRef("create_term_form").reset()
+            getRef("create_fund_form").reset()
         }
     }
 
@@ -10449,6 +10467,7 @@ Bitcoin.Util = {
     getRef('fund_creation_toggle').addEventListener('change', e => {
         if(e.detail.checked){
             getRef('fund_details_form').classList.add('hide-completely')
+            getRef('fund_details_form').querySelectorAll('input').forEach(input => input.disabled = true)
             getRef('create_fund_button').classList.add('hide-completely')
             getRef('add_investors_button').classList.remove('hide-completely')
             getRef('fund_selector_container').classList.remove('hide-completely')
@@ -10456,6 +10475,7 @@ Bitcoin.Util = {
         else{
             getRef('fund_details_form').classList.remove('hide-completely')
             getRef('create_fund_button').classList.remove('hide-completely')
+            getRef('fund_details_form').querySelectorAll('input').forEach(input => input.disabled = false)
             getRef('add_investors_button').classList.add('hide-completely')
             getRef('fund_selector_container').classList.add('hide-completely')
         }
@@ -10499,14 +10519,14 @@ Bitcoin.Util = {
             getRef("btc-usd-rate").textContent = `BTC: $${rates.BTC_USD.toFixed(2)}`;
             getRef('fund_list').innerHTML = '';
             getRef('fund_selector').innerHTML = ''
+            getRef('term_selector').innerHTML = ``
 
-            const termsFrag = document.createDocumentFragment()
 
             compactIDB.readAllData("terms").then(terms => {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
                     console.log(term)
-
+                    
                     // Creating fund selection options
                     const smOption = document.createElement('sm-option')
                     smOption.innerHTML = `
@@ -10518,20 +10538,18 @@ Bitcoin.Util = {
                     </div>    
                     `
                     smOption.setAttribute('value', term.floID)
-                    termsFrag.append(smOption)
-
+                    getRef('term_selector').append(smOption)
+                    
                     compactIDB.searchData("funds", {
-                            lowerKey: floID + "|",
+                        lowerKey: floID + "|",
                             upperKey: floID + "||"
                         })
                         .then(funds => renderFunds(term, funds))
                         .catch(error => console.error(error))
-                    getFundsFromBlockchain(floID)
+                        getFundsFromBlockchain(floID)
                         .then(funds => renderFunds(term, funds))
                         .catch(error => console.error(error))
-                }
-                getRef('term_selector').innerHTML = ``
-                getRef('term_selector').append(termsFrag)
+                    }
             }).catch(error => console.error(error));
             getTermsFromBlockchain().then(terms => {
                 for (let floID in terms) {
@@ -10739,9 +10757,8 @@ Bitcoin.Util = {
                 const investorGroup = document.createElement('li')
                 investorGroup.classList.add('investor-group')
                 investorGroup.innerHTML = `
-                    <header class="flex space-between align-center">
-                        <h4 class="weight-500 color-0-8">Transaction group</h4>
-                        <a class="fund-link" href="https://livenet.flocha.in/tx/${funds[k][i].txid}" target="_blank">See transaction</a>   
+                    <header class="flex align-center">
+                        <a class="fund-link justify-right" href="https://livenet.flocha.in/tx/${funds[k][i].txid}" target="_blank">See transaction</a>   
                     </header>
                     <ul class="investor-group__list"></ul>
                 `
@@ -10921,10 +10938,10 @@ Bitcoin.Util = {
         console.log(termStr)
 
         getRef('term_details').innerHTML = termStr.replace(/\|/g, "<br>")
-        getRef('admin_id').innerHTML = `Enter Private key of adminID <h5 class="weight-400">${floGlobals.adminID}</h5>`
+        getRef('term_admin_id').innerHTML = `Enter Private key of adminID <h5 class="weight-400">${floGlobals.adminID}</h5>`
         showPage('confirm_term_page')
         getRef('create_term_button').onclick = () => {
-            const privKey = getRef('get_private_key').value
+            const privKey = getRef('get_term_private_key').value
             if (!floCrypto.verifyPrivKey(privKey, floGlobals.adminID)) {
                 notify("Access Denied! incorrect private key", 'error');
                 return
@@ -10947,16 +10964,32 @@ Bitcoin.Util = {
         let createMod = !getRef("fund_creation_toggle").checked;
         console.info(investments, termId)
         if (createMod) //create new fund
-            fStr = createFundString(f["btc_base"].value, f["usd_rate"].value, f["start_date"].value, investments)
+            fStr = createFundString(getRef("btc_base").value, getRef("usd_rate").value, getRef("start_date").value, investments)
         else //add investments to existing fund
             fStr = continueFund(getRef("fund_selector").value, investments)
+            
         console.log(fStr);
-        let privKey = prompt(fStr + `\n\nEnter privateKey of ${termId}`);
-        floBlockchainAPI.writeData(termId, fStr, privKey, termId).then(result => {
-            console.info(result);
-            alert(createMod ? "New Fund created" : "Invesments added to fund")
-        }).catch(error => reject(error))
+
+        getRef('fund_details').innerHTML = fStr.replace(/\|/g, "<br>")
+        getRef('fund_admin_id').innerHTML = `Enter Private key of fund ID <h5 class="weight-400">${termId}</h5>`
+        showPage('confirm_fund_page')
+
+        getRef('confirm_fund_button').onclick = () => {
+            const privKey = getRef('get_fund_private_key').value
+            console.log(privKey)
+            if (!floCrypto.verifyPrivKey(privKey, termId)) {
+                notify("Access Denied! incorrect private key", 'error');
+                return
+            }
+            floBlockchainAPI.writeData(termId, fStr, privKey, termId).then(result => {
+                console.log(result);
+                showPage('admin_page')
+                notify(createMod ? "New Fund created" : "Invesments added to fund", 'success');
+                getRef("create_fund_form").reset()
+            }).catch(error => console.error(error))
+        }
     })
+    showPage('admin_page')
 </script>
 
 </body>
