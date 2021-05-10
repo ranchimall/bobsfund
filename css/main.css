@@ -9,6 +9,10 @@
   font-size: clamp(1rem, 1.2vmax, 3rem);
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   --accent-color: #2353FF;
   --light-shade: rgba(var(--text-color), 0.06);
@@ -399,8 +403,7 @@ ul {
 #loading_page {
   position: relative;
   display: grid;
-  z-index: 5;
-  height: 100vh;
+  height: 100%;
   place-content: center;
   justify-items: center;
 }
