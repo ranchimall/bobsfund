@@ -10425,7 +10425,7 @@ Bitcoin.Util = {
     getRef('search_investor').addEventListener('input', e => {
         throttle(() => {
             allInvestors.forEach( child => {
-                if(child.dataset.floId.toLowerCase().includes(getRef('search_investor').value.toLowerCase())){
+                if(child.dataset.floId.toLowerCase().includes(getRef('search_investor').value.trim().toLowerCase())){
                     child.classList.remove('hide-completely')
                 }
                 else{
@@ -10457,8 +10457,8 @@ Bitcoin.Util = {
         const allInvestorsInput =  getRef('investors_input_list').querySelectorAll('.investor-input')
         const addedInvestors = []
         allInvestorsInput.forEach(investor => {
-            const floId = investor.children[0].value
-            const amount = investor.children[1].value
+            const floId = investor.children[0].value.trim()
+            const amount = investor.children[1].value.trim()
             addedInvestors.push([floId, amount])
         })
         return addedInvestors
@@ -10504,12 +10504,11 @@ Bitcoin.Util = {
                 terms: {},
                 funds: {},
                 appendix: {}
-            }).then(result => refreshBtn.click())
+            }).then(result => getRef('refresh-btn').click())
             .catch(error => console.error(error))
     }
 
-    const refreshBtn = document.getElementById('refresh-btn');
-    refreshBtn.addEventListener("click", evt => {
+    getRef('refresh-btn').addEventListener("click", evt => {
         renderfundPlaceholder()
         getCurrentRates().then(rates => {
             USD_current = rates.USD_INR;
@@ -10951,6 +10950,7 @@ Bitcoin.Util = {
                 showPage('admin_page')
                 notify("Term added in blockchain", 'success');
                 getRef("create_term_form").reset()
+                getRef('refresh-btn').click()
             }).catch(error => console.error(error))
         }
     })
@@ -10986,6 +10986,8 @@ Bitcoin.Util = {
                 showPage('admin_page')
                 notify(createMod ? "New Fund created" : "Invesments added to fund", 'success');
                 getRef("create_fund_form").reset()
+                clearAddedInvestors()
+                getRef('refresh-btn').click()
             }).catch(error => console.error(error))
         }
     })
