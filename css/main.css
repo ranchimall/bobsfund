@@ -396,6 +396,55 @@ ul {
   fill: rgba(var(--text-color), 0.9);
 }
 
+#loading_page {
+  position: relative;
+  display: grid;
+  z-index: 5;
+  height: 100vh;
+  place-content: center;
+  justify-items: center;
+}
+
+#loading_page__footer {
+  position: absolute;
+  padding: 3rem;
+  bottom: 0;
+}
+
+#rm_logo {
+  width: auto;
+  height: 2rem;
+  fill: rgba(var(--text-color), 1);
+}
+
+#loader {
+  display: flex;
+  position: relative;
+  width: 4rem;
+  height: 8rem;
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke: rgba(var(--text-color), 1);
+}
+#loader polyline:nth-of-type(2),
+#loader polyline:nth-of-type(3),
+#loader polyline:nth-of-type(4) {
+  stroke-dasharray: 60;
+  animation: loading infinite 1s;
+}
+
+@keyframes loading {
+  0% {
+    stroke-dashoffset: -60;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 60;
+  }
+}
 #main_header {
   position: relative;
   display: grid;
