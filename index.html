@@ -10492,7 +10492,7 @@ Bitcoin.Util = {
     getRef('term_selector').addEventListener('change', e => {
         const floID = e.detail.value
         getRef('fund_selector').querySelectorAll('.term-fund__option-group').forEach(option => option.classList.add('hide-completely'))
-        getRef('fund_selector').querySelector(`.term-fund__option-group[data-flo-id="${floID}"]`).classList.remove('hide-completely')
+        getRef('fund_selector').querySelector(`.term-fund__option-group[data-flo-id="${floID}"]`)?.classList.remove('hide-completely')
     })
 
 </script>
@@ -10991,7 +10991,6 @@ Bitcoin.Util = {
             }).catch(error => console.error(error))
         }
     })
-    showPage('admin_page')
 </script>
 
 </body>
