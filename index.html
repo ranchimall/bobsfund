@@ -10519,8 +10519,6 @@ Bitcoin.Util = {
 
 </script>
 <script>
-    renderfundPlaceholder()
-
     function onLoadStartUp() {
         compactIDB.initDB(floGlobals.application, {
                 terms: {},
@@ -10570,7 +10568,7 @@ Bitcoin.Util = {
                         getFundsFromBlockchain(floID)
                         .then(funds => {
                             renderFunds(term, funds)
-                            // showPage('home_page')
+                            showPage('home_page')
                         })
                         .catch(error => console.error(error))
                     }
