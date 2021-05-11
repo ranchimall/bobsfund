@@ -21,8 +21,8 @@
                 FLO_TEST: ['https://testnet-flosight.duckdns.org/', 'https://testnet.flocha.in/']
             },
             adminID: "FKAEdnPfjXLHSYwrXQu377ugN4tXU7VGdf",
-            application: "bobsFund_Test",
-            productStr: "Bob's Fund",
+            application: "Test_fund2",
+            productStr: "Test fund2",
             sendAmt: 0.001,
             fee: 0.0005
         }
@@ -147,7 +147,7 @@
                 <ul id="investors_input_list" class="grid gap-1">
                     <li class="investor-input grid">
                         <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
-                        <sm-input placeholder="Amount(₹)" type="number" class="outlined" animate></sm-input>
+                        <sm-input placeholder="Amount(₹)" type="text" class="outlined" animate></sm-input>
                         <button class="remove-investor" title="Remove this investor">
                             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
                         </button>
@@ -10177,7 +10177,7 @@ Bitcoin.Util = {
             investorInput.classList.add('investor-input', 'grid')
             investorInput.innerHTML = `
                 <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
-                <sm-input placeholder="Amount(₹)" type="number" class="outlined" animate></sm-input>
+                <sm-input placeholder="Amount(₹)" type="text" class="outlined" animate></sm-input>
                 <button class="remove-investor" title="Remove this investor">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
                 </button>
@@ -10809,9 +10809,6 @@ Bitcoin.Util = {
                 // *** txid for these investors: funds[k][i].txid
             }
             fundList.append(investorsFrag)
-            fundBlock.setAttribute("title", '--(Terms and condition)--\n' + term.data.replace(/\|/g, "\n") +
-                '\n\n--(Fund Details)--\n' + funds[k].map(fd => fd.data).join("\n-----\n")
-                .replace(/\|/g, "\n").replace(/:=/g, "\t:\t").replace(/{/g, "\n\t").replace(/},?/g, "").replace(/]/g, "\n]"));
             removeElementIfExist(k);
             fundBlock.id = k;
             //add link to view term tx in blockchain [1. term txn(variable = term.txid)];
@@ -10862,8 +10859,8 @@ Bitcoin.Util = {
                     case "fund invesments (inr)":
                         funds["amounts"] = funds["amounts"] || [];
                         let tmp = [];
-                        d[1].match(/\w{34}:=[\w ,.]+/gi).forEach(a => {
-                            a = a.split(":=");
+                        d[1].split(";").forEach(a => {
+                            a = a.split("-");
                             tmp.push([a[0], parseNumber(a[1])]);
                         });
                         funds["amounts"].push(tmp)
@@ -10920,7 +10917,7 @@ Bitcoin.Util = {
             `Base Value: ${BTC_base} USD`,
             `USD INR rate at start: ${USD_base}`,
             `Fund Start date: ${dateFormat(start_date)}`,
-            `Fund invesments (INR): [${funds.map(f => `{${f[0].trim()}:=${f[1].trim()}}`).join(",")}]`
+            `Fund invesments (INR): ${funds.map(f => `${f[0].trim()}-${f[1].trim()}`).join("; ")}`
         ].join("|");
     }
 
@@ -10928,7 +10925,7 @@ Bitcoin.Util = {
         return [
             floGlobals.productStr,
             "Continue: " + fundID,
-            `Fund invesments (INR): [${funds.map(f => `{${f[0].trim()}:=${f[1].trim()}}`).join(",")}]`
+            `Fund invesments (INR): ${funds.map(f => `${f[0].trim()}-${f[1].trim()}`).join("; ")}`
         ].join("|");
     }
 
