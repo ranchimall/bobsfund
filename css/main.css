@@ -667,8 +667,14 @@ sm-option {
   grid-template-columns: minmax(0, 1fr);
 }
 
+.fund-block__details {
+  gap: 2rem;
+}
 .fund-block__details > .grid:nth-of-type(1), .fund-block__details > .grid:nth-of-type(2) {
   grid-template-columns: 1fr 1fr;
+}
+.fund-block__details > .grid:nth-of-type(3), .fund-block__details > .flex {
+  grid-column: 1/3;
 }
 
 .flex-grid {

@@ -10105,7 +10105,7 @@ Bitcoin.Util = {
     const fundBlockTemplate = document.createElement('template')
     fundBlockTemplate.innerHTML = `
     <li class="fund-block">
-        <div class="fund-block__details grid gap-1 margin-bottom-1-5r">
+        <div class="fund-block__details grid margin-bottom-1-5r">
             <div class="grid flow-column gap-1">
                 <div class="grid">
                     <span class="label">Start date</span>
@@ -10126,11 +10126,15 @@ Bitcoin.Util = {
                     <span class="value base-usd"></span>
                 </div>
             </div>
-            <div class="grid">
+            <div class="tapout-container grid">
                 <span class="value margin-bottom-0-5r">Tapouts</span>
                 <ul class="tapout-list flex gap-1-5"></ul>
             </div>
-            <div class="grid flow-column gap-1 align-end justify-end">
+            <div class="flex align-center space-between">
+                <div class="grid">
+                    <span class="label">Total investment</span>
+                    <span class="value total-investment"></span>
+                </div>
                 <a class="term-link" target="_blank">See terms</a>
             </div>
         </div>
@@ -10150,7 +10154,8 @@ Bitcoin.Util = {
                 endDate,
                 baseUsd,
                 baseBtc,
-                tapouts
+                tapouts,
+                totalInvestment
             } = obj
             const fundBlock = fundBlockTemplate.content.cloneNode(true)
             fundBlock.querySelector('.term-link').href = termTxHref
@@ -10158,6 +10163,7 @@ Bitcoin.Util = {
             fundBlock.querySelector('.end-date').textContent = endDate
             fundBlock.querySelector('.base-usd').textContent = `₹${baseUsd}`
             fundBlock.querySelector('.base-btc').textContent = `$${baseBtc}`
+            fundBlock.querySelector('.total-investment').textContent = `$${totalInvestment}`
             
             const tapoutsFrag = document.createDocumentFragment()
             for(tapout in tapouts){
