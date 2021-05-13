@@ -10163,7 +10163,7 @@ Bitcoin.Util = {
             fundBlock.querySelector('.end-date').textContent = endDate
             fundBlock.querySelector('.base-usd').textContent = `₹${baseUsd}`
             fundBlock.querySelector('.base-btc').textContent = `$${baseBtc}`
-            fundBlock.querySelector('.total-investment').textContent = `$${totalInvestment}`
+            fundBlock.querySelector('.total-investment').textContent = `₹${totalInvestment}`
             
             const tapoutsFrag = document.createDocumentFragment()
             for(tapout in tapouts){
@@ -10760,7 +10760,6 @@ Bitcoin.Util = {
                 endDate: dateFormat(dateAdder(startDate, term["maxPeriod"])),
                 baseUsd: f.USD_base,
                 baseBtc: f.BTC_base,
-                totalInvestment: f.totalInvestment,
                 tapouts,
             }
 
@@ -10775,11 +10774,8 @@ Bitcoin.Util = {
             smOption.setAttribute('value', funds[k][0].txid)
             fundsFrag.append(smOption)
 
-            const fundBlock = render.fundBlock(fundObj).firstElementChild
-            const fundList = fundBlock.querySelector('.investors-group-list')
-
             const investorsFrag = document.createDocumentFragment()
-
+            let total_invested = total_net = 0;
             for (let i in f.amounts) {
                 const investorGroup = document.createElement('li')
                 investorGroup.classList.add('investor-group')
@@ -10788,8 +10784,7 @@ Bitcoin.Util = {
                         <a class="fund-link justify-right" href="https://livenet.flocha.in/tx/${funds[k][i].txid}" target="_blank">See transaction</a>   
                     </header>
                     <ul class="investor-group__list"></ul>
-                `
-
+                `;
                 f.amounts[i].forEach(a => {
                     let investor = a[0],
                         amount = a[1],
@@ -10806,13 +10801,24 @@ Bitcoin.Util = {
                             usd: (netVal / USD_current).toFixed(2),
                         }
                     }
+                    total_invested += amount;
+                    total_net += netVal;
                     const investorCard = document.createElement('fund-investor')
                     investorCard.data = obj
                     investorGroup.querySelector('.investor-group__list').append(investorCard)
                 });
                 investorsFrag.append(investorGroup)
-                // *** txid for these investors: funds[k][i].txid
             }
+            fundObj.totalInvestment = {
+                inr: total_invested.toFixed(2),
+                usd: (total_invested / f.USD_base).toFixed(2)
+            }
+            fundObj.totalNet = {
+                inr: total_net.toFixed(2),
+                usd: (total_net / USD_current).toFixed(2)
+            }
+            const fundBlock = render.fundBlock(fundObj).firstElementChild
+            const fundList = fundBlock.querySelector('.investors-group-list')
             fundList.append(investorsFrag)
             removeElementIfExist(k);
             fundBlock.id = k;
@@ -10847,7 +10853,6 @@ Bitcoin.Util = {
         }
 
         let funds = {};
-        funds["totalInvestment"] = 0;
         data.forEach(fd => {
             let cont = /continue: [a-z0-9]{64}\|/.test(fd);
             fd.data.split("|").forEach(d => {
@@ -10868,7 +10873,6 @@ Bitcoin.Util = {
                         d[1].split(";").forEach(a => {
                             a = a.split("-");
                             tmp.push([a[0], parseNumber(a[1])]);
-                            funds["totalInvestment"] += parseNumber(a[1]);
                         });
                         funds["amounts"].push(tmp)
                         break;
