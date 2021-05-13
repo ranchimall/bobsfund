@@ -10631,33 +10631,32 @@ Bitcoin.Util = {
                     txid: true,
                     filter: d => d.startsWith(floGlobals.productStr)
                 }).then(result => {
-                    Promise.all(result.data.reverse().map(d => new Promise((res, rej) => {
-                        if (/continue: /i.test(d[1])) {
-                            let ctx = d[1].match(/continue: [0-9a-z]{64}/i).toString().split(": ")[1];
-                            console.info(floID + "|" + ctx)
-                            compactIDB.readData('funds', floID + "|" + ctx).then(fd => {
-                                fd.push({
+                    compactIDB.searchData("funds", {
+                        lowerKey: floID + "|",
+                        upperKey: floID + "||"
+                    }).then(funds => {
+                        let writeKeys = new Set();
+                        result.data.reverse().forEach(d => {
+                            if (/continue: /i.test(d[1])) {
+                                let ctx = d[1].match(/continue: [0-9a-z]{64}/i).toString().split(": ")[1];
+                                funds[floID + "|" + ctx].push({
                                     txid: d[0],
                                     data: d[1]
                                 })
-                                compactIDB.writeData('funds', fd, floID + "|" + ctx)
-                                    .then(r => res([floID + "|" + ctx, fd]))
-                                    .catch(e => rej(e))
-                            }).catch(error => rej(error))
-                        } else {
-                            let fd = [{
-                                txid: d[0],
-                                data: d[1]
-                            }]
-                            compactIDB.addData('funds', fd, floID + "|" + d[0])
-                                .then(r => res([floID + "|" + d[0], fd]))
-                                .catch(e => rej(e))
-                        }
-                    }))).then(results => {
-                        compactIDB.writeData('appendix', result.totalTxs, "lastTx|" + floID);
-                        let data = {};
-                        results.forEach(r => data[r[0]] = r[1])
-                        resolve(data);
+                                writeKeys.add(floID + "|" + ctx);
+                            } else {
+                                funds[floID + "|" + d[0]] = [{
+                                    txid: d[0],
+                                    data: d[1]
+                                }]
+                                writeKeys.add(floID + "|" + d[0]);
+                            }
+                        })
+                        writeKeys = Array.from(writeKeys);
+                        Promise.all(writeKeys.map(k => compactIDB.writeData("funds", funds[k], k))).then(results => {
+                            compactIDB.writeData('appendix', result.totalTxs, "lastTx|" + floID);
+                            resolve(writeKeys.map(k => funds[k]))
+                        }).catch(error => reject(error))
                     }).catch(error => reject(error))
                 }).catch(error => reject(error))
             }).catch(error => reject(error))
