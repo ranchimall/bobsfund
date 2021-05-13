@@ -21,8 +21,8 @@
                 FLO_TEST: ['https://testnet-flosight.duckdns.org/', 'https://testnet.flocha.in/']
             },
             adminID: "FKAEdnPfjXLHSYwrXQu377ugN4tXU7VGdf",
-            application: "Test_fund2",
-            productStr: "Test fund2",
+            application: "TestFund_",
+            productStr: "Bobs Fund",
             sendAmt: 0.001,
             fee: 0.0005
         }
@@ -10545,7 +10545,7 @@ Bitcoin.Util = {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
                     console.log(term)
-                    
+
                     // Creating fund selection options
                     const smOption = document.createElement('sm-option')
                     smOption.innerHTML = `
@@ -10558,27 +10558,28 @@ Bitcoin.Util = {
                     `
                     smOption.setAttribute('value', term.floID)
                     getRef('term_selector').append(smOption)
-                    
+
                     compactIDB.searchData("funds", {
-                        lowerKey: floID + "|",
+                            lowerKey: floID + "|",
                             upperKey: floID + "||"
                         })
                         .then(funds => renderFunds(term, funds))
                         .catch(error => console.error(error))
-                        getFundsFromBlockchain(floID)
+                    getFundsFromBlockchain(floID)
                         .then(funds => {
                             renderFunds(term, funds)
                             showPage('home_page')
-                        })
-                        .catch(error => console.error(error))
-                    }
-                }).catch(error => console.error(error));
+                        }).catch(error => console.error(error))
+                }
+            }).catch(error => console.error(error));
             getTermsFromBlockchain().then(terms => {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
                     getFundsFromBlockchain(floID)
-                        .then(funds => renderFunds(term, funds))
-                        .catch(error => console.error(error))
+                        .then(funds => {
+                            renderFunds(term, funds)
+                            showPage('home_page')
+                        }).catch(error => console.error(error))
                 }
             }).catch(error => console.error(error))
         }).catch(error => console.error(error))
@@ -10756,7 +10757,8 @@ Bitcoin.Util = {
                 endDate: dateFormat(dateAdder(startDate, term["maxPeriod"])),
                 baseUsd: f.USD_base,
                 baseBtc: f.BTC_base,
-                tapouts
+                totalInvestment: f.totalInvestment,
+                tapouts,
             }
 
             // Creating fund selection options
@@ -10842,6 +10844,7 @@ Bitcoin.Util = {
         }
 
         let funds = {};
+        funds["totalInvestment"] = 0;
         data.forEach(fd => {
             let cont = /continue: [a-z0-9]{64}\|/.test(fd);
             fd.data.split("|").forEach(d => {
@@ -10862,6 +10865,7 @@ Bitcoin.Util = {
                         d[1].split(";").forEach(a => {
                             a = a.split("-");
                             tmp.push([a[0], parseNumber(a[1])]);
+                            funds["totalInvestment"] += parseNumber(a[1]);
                         });
                         funds["amounts"].push(tmp)
                         break;
@@ -10987,9 +10991,13 @@ Bitcoin.Util = {
             fStr = createFundString(getRef("btc_base").value, getRef("usd_rate").value, getRef("start_date").value, investments)
         else //add investments to existing fund
             fStr = continueFund(getRef("fund_selector").value, investments)
-            
-        console.log(fStr);
 
+        console.log(fStr);
+        if (fStr.length >= 1040) {
+            console.error("flo data length is too long, Please reduce it and try again");
+            notify("floData is too large! Please reduce it and try again.", 'error');
+            return
+        }
         getRef('fund_details').innerHTML = fStr.replace(/\|/g, "<br>")
         getRef('fund_admin_id').innerHTML = `Enter Private key of fund ID <h5 class="weight-400">${termId}</h5>`
         showPage('confirm_fund_page')
