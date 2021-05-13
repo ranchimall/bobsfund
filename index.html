@@ -21,7 +21,7 @@
                 FLO_TEST: ['https://testnet-flosight.duckdns.org/', 'https://testnet.flocha.in/']
             },
             adminID: "FKAEdnPfjXLHSYwrXQu377ugN4tXU7VGdf",
-            application: "TestFund_",
+            application: "Test_Fund_",
             productStr: "Bobs Fund",
             sendAmt: 0.001,
             fee: 0.0005
@@ -10550,8 +10550,6 @@ Bitcoin.Util = {
             compactIDB.readAllData("terms").then(terms => {
                 for (let floID in terms) {
                     let term = parseTerm(terms[floID])
-                    console.log(term)
-
                     // Creating fund selection options
                     const smOption = document.createElement('sm-option')
                     smOption.innerHTML = `
