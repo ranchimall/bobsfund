@@ -10726,7 +10726,7 @@ Bitcoin.Util = {
 
     function refresh(showLoader = true){
         if(showLoader)
-            showPage('error_page')
+            showPage('loading_page')
         getCurrentRates().then(async (rates) => {
             USD_current = rates.USD_INR;
             BTC_current = rates.BTC_USD;
@@ -10763,7 +10763,7 @@ Bitcoin.Util = {
                     getFundsFromBlockchain(floID)
                     .then(funds => {
                         renderFunds(term, funds)
-                        // showPage('home_page')
+                        showPage('home_page')
                     }).catch(error => console.error(error))
                 }
             }).catch(error => console.error(error));
@@ -10773,7 +10773,7 @@ Bitcoin.Util = {
                     let term = parseTerm(terms[floID])
                     const funds = await getFundsFromBlockchain(floID)
                     renderFunds(term, funds)
-                    // showPage('home_page')
+                    showPage('home_page')
                 }
             }
             catch(err){
