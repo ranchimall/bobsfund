@@ -8347,17 +8347,24 @@ Bitcoin.Util = {
 
             this.amountInvested = amountInvested
             this.netValue = netValue
+            
+            for (let item in this.amountInvested){
+                this.amountInvested[item] = parseFloat(this.amountInvested[item])
+            }
+            
+            for (let item in this.netValue){
+                this.netValue[item] = parseFloat(this.netValue[item])
+            }            
 
             this.dataset.floId = floId
-            // this.shadow.querySelector('.link').href = href
+
             this.shadow.querySelector('.flo-id').textContent = floId
-            this.shadow.querySelector('.amount-invested').textContent = `${currencySymbols[preferredCurrency]}${this.amountInvested[preferredCurrency]}`
-            this.shadow.querySelector('.net-value').textContent = `${currencySymbols[preferredCurrency]}${this.netValue[preferredCurrency]}`
+            this.toggleCurrency()
         }
 
         toggleCurrency = () => {
-            this.shadow.querySelector('.amount-invested').textContent = `${currencySymbols[preferredCurrency]}${this.amountInvested[preferredCurrency]}`
-            this.shadow.querySelector('.net-value').textContent = `${currencySymbols[preferredCurrency]}${this.netValue[preferredCurrency]}`
+            this.shadow.querySelector('.amount-invested').textContent = `${this.amountInvested[preferredCurrency].toLocaleString(`en-${preferredCurrency.substring(0,2)}`, {style: 'currency', currency: preferredCurrency})}`
+            this.shadow.querySelector('.net-value').textContent = `${this.netValue[preferredCurrency].toLocaleString(`en-${preferredCurrency.substring(0,2)}`, {style: 'currency', currency: preferredCurrency})}`
         }
 
         connectedCallback(){
@@ -10373,6 +10380,14 @@ Bitcoin.Util = {
             this.totalInvestment = totalInvestment
             this.totalNet = totalNet
 
+            for (let item in this.totalInvestment){
+                this.totalInvestment[item] = parseFloat(this.totalInvestment[item])
+            }
+            
+            for (let item in this.totalNet){
+                this.totalNet[item] = parseFloat(this.totalNet[item])
+            }
+
             this.shadow.querySelector('.term-link').href = termTxHref
             this.shadow.querySelector('.start-date').textContent = startDate
             this.shadow.querySelector('.end-date').textContent = endDate
@@ -10396,8 +10411,8 @@ Bitcoin.Util = {
         }
 
         toggleCurrency = () => {
-            this.shadow.querySelector('.total-investment').textContent = `${currencySymbols[preferredCurrency]}${this.totalInvestment[preferredCurrency]}`
-            this.shadow.querySelector('.net-value').textContent = `${currencySymbols[preferredCurrency]}${this.totalNet[preferredCurrency]}`
+            this.shadow.querySelector('.total-investment').textContent = `${this.totalInvestment[preferredCurrency].toLocaleString(`en-${preferredCurrency.substring(0,2)}`, {style: 'currency', currency: preferredCurrency})}`
+            this.shadow.querySelector('.net-value').textContent = `${this.totalNet[preferredCurrency].toLocaleString(`en-${preferredCurrency.substring(0,2)}`, {style: 'currency', currency: preferredCurrency})}`
         }
     })
 
@@ -10579,10 +10594,7 @@ Bitcoin.Util = {
 
 
     let preferredCurrency
-   const currencySymbols = {
-       usd: '$',
-       inr: '₹'
-   }
+
     if(localStorage.getItem('preferred-currency')){
         preferredCurrency = localStorage.getItem('preferred-currency')
         document.querySelector(`sm-option[value="${localStorage.getItem('preferred-currency')}"]`).setAttribute('selected', '')
