@@ -10190,6 +10190,12 @@ Bitcoin.Util = {
         .margin-bottom-3r{
             margin-bottom: 3rem;
         }
+        p {
+            font-size: 0.8;
+            max-width: 70ch;
+            line-height: 1.5;
+            color: rgba(var(--text-color), 0.8);
+        }
         .fund-block{
             border-radius: 0.3rem;
             padding: 1rem;
@@ -10330,7 +10336,11 @@ Bitcoin.Util = {
             </div>
         </div>
         <div class="grid">
-            <h4>Investors</h4>
+            <h4 class="margin-bottom-0-5r">Investors</h4>
+            <p>
+                When redemption is due, redeem button will appear next to the FLO ID. Enter your private key to redeem.<br>
+                <strong>Do not enter private key in similar looking pages.</strong>    
+            </p>
             <ul class="investors-group-list grid"></ul>
         </div>
     </li>
