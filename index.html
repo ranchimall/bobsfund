@@ -102,10 +102,10 @@
             <h2 class="h2 weight-700 margin-bottom-1r">Bob's Fund<br>on FLO Blockchain</h2>
             <p>
                 Bob's Fund is a 20 year long term Bitcoin price linked product. Investors are entitled to 100 percent
-                of Bitcoin price gains, but they must hold for 20 years. <!-- Over a very long time period, investor returns
+                of Bitcoin price gains, but they must hold for 20 years. Over a very long time period, investor returns
                 on an asset like Bitcoin should outstrip returns on conventional assets like real estate and stocks. The
                 management fees on this product is zero. RanchiMall earns by having invested an equal amount as
-                every investor, thus the interests of fund manager, and fund investors are totally aligned. -->
+                every investor, thus the interests of fund manager, and fund investors are totally aligned.
             </p>
         </section>
         <header class="fund-list__header grid margin-bottom-1-5r">
@@ -10205,6 +10205,16 @@ Bitcoin.Util = {
         .fund-block__details > .grid:nth-of-type(3), .fund-block__details > .grid:nth-of-type(4) {
             grid-column: 1/3;
         }
+        .tapout-list{
+            display: grid;
+            gap: 1.5rem;
+            overflow-x: auto;
+            grid-auto-flow: column;
+            justify-content: flex-start;
+        }
+        .tapout-list li{
+            min-width: 8rem;
+        }
         .investor-group{
             display: grid;
             padding: 0.5rem;
@@ -10289,7 +10299,7 @@ Bitcoin.Util = {
             </div>
             <div class="tapout-container grid">
                 <span class="value margin-bottom-0-5r">Tapouts</span>
-                <ul class="tapout-list flex gap-1-5"></ul>
+                <ul class="tapout-list"></ul>
             </div>
             <div class="grid flow-column gap-1">
                 <div class="grid">
