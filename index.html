@@ -10205,6 +10205,11 @@ Bitcoin.Util = {
         .fund-block__details > .grid:nth-of-type(3), .fund-block__details > .grid:nth-of-type(4) {
             grid-column: 1/3;
         }
+        .fund-block__details > .grid:nth-of-type(4){
+            gap: 1.5rem;
+            justify-content: flex-start;
+            grid-template-columns: 1fr 1fr;
+        }
         .tapout-list{
             display: grid;
             gap: 1.5rem;
@@ -10214,6 +10219,9 @@ Bitcoin.Util = {
         }
         .tapout-list li{
             min-width: 8rem;
+        }
+        .term-link{
+            justify-self: flex-end;
         }
         .investor-group{
             display: grid;
@@ -10262,6 +10270,11 @@ Bitcoin.Util = {
             -webkit-hyphens: auto;
             hyphens: auto;
         }
+        @media only screen and (max-width: 640px) {
+            .term-link{
+                grid-column: 2/3;
+            }
+        }
         @media only screen and (min-width: 640px) {
             .fund-block__details{
                 grid-template-columns: 1fr 1fr;
@@ -10272,6 +10285,9 @@ Bitcoin.Util = {
             .justify-self-end{
                 justify-self: flex-end;
                 text-align: right;
+            }
+            .fund-block__details > .grid:nth-of-type(4){
+                grid-template-columns: auto auto 1fr;
             }
         }
     </style>
@@ -10301,7 +10317,7 @@ Bitcoin.Util = {
                 <span class="value margin-bottom-0-5r">Tapouts</span>
                 <ul class="tapout-list"></ul>
             </div>
-            <div class="grid flow-column gap-1">
+            <div class="grid">
                 <div class="grid">
                     <span class="label">Total investment</span>
                     <span class="value total-investment"></span>
@@ -10310,7 +10326,7 @@ Bitcoin.Util = {
                     <span class="label">Total net value</span>
                     <span class="value net-value" style="color: var(--green)"></span>
                 </div>
-                <a class="term-link justify-right" target="_blank">See terms</a>
+                <a class="term-link" target="_blank">See terms</a>
             </div>
         </div>
         <div class="grid">
