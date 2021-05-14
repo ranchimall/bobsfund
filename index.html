@@ -8361,9 +8361,11 @@ Bitcoin.Util = {
         }
 
         connectedCallback(){
+            document.getElementById('currency_selector').addEventListener('change', this.toggleCurrency)
         }
         
         disconnectedCallback(){
+            document.getElementById('currency_selector').removeEventListener('change', this.toggleCurrency)
         }
     })
 
@@ -10559,7 +10561,6 @@ Bitcoin.Util = {
     getRef('currency_selector').addEventListener('change', e => {
         preferredCurrency = e.detail.value
         localStorage.setItem('preferred-currency', e.detail.value)
-        document.querySelectorAll('fund-investor').forEach(investor => investor.toggleCurrency())
         document.querySelectorAll('fund-block').forEach(fund => fund.toggleCurrency())
     })
 
