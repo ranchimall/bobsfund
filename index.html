@@ -21,15 +21,13 @@
                 FLO_TEST: ['https://testnet-flosight.duckdns.org/', 'https://testnet.flocha.in/']
             },
             adminID: "FKAEdnPfjXLHSYwrXQu377ugN4tXU7VGdf",
-            application: "Test_Fund_",
-            productStr: "Bobs Fund",
+            application: "TestFund_v3",
+            productStr: "TestFund_v3",
             sendAmt: 0.001,
             fee: 0.0005
         }
     </script>
 </head>
-
-
 
 <body onload="onLoadStartUp()" data-theme="light">
     <sm-notifications id="notification_drawer"></sm-notifications>
@@ -128,33 +126,69 @@
             </button>
             <h3>Admin Panel</h3>
         </header>
-        <sm-tab-header target="admin_options" variant="tab">
-            <sm-tab>Create Fund</sm-tab>
-            <sm-tab>Create Term</sm-tab>
-        </sm-tab-header>
-        <sm-tab-panels id="admin_options">
-            <form id="create_fund_form" class="grid gap-1-5">
+        <form id="create_fund_form" class="grid gap-1-5">
                 <sm-switch id="fund_creation_toggle">
                     <div class="flex" slot="left">
                         Add investors to existing fund
                     </div>
                 </sm-switch>
-                <div id="term_selector_container" class="grid">
-                    <span class="margin-bottom-0-5r">Select Term</span>
-                    <sm-select id="term_selector"></sm-select>
-                </div>
                 <section id="fund_details_form" class="grid gap-1-5 margin-bottom-0-5r">
                     <label class="grid gap-0-5">
                         Fund start date
-                        <input type="date" id="start_date" required>
+                        <input type="date" name="start_date" required>
                     </label>
                     <label class="grid gap-0-5">
                         Base BTC value ($)
-                        <input type="text" id="btc_base" pattern="[\d,]+.?\d" required>
+                        <input type="number" name="btc_base" step="0.01" pattern="[\d,]+.?\d" required>
                     </label>
                     <label class="grid gap-0-5">
                         Base USD rate (₹)
-                        <input type="number" id="usd_rate" step="0.01" required>
+                        <input type="number" name="usd_rate" step="0.01" required>
+                    </label>
+                    <div class="grid gap-0-5">
+                        Maximum Duration
+                        <div class="flex">
+                            <input type="number" name="max_pv" inputmode="numeric" required>
+                            <sm-select id="max_pt" align-select="right">
+                                <sm-option value="year(s)" selected>year(s)</sm-option>
+                                <sm-option value="month(s)">month(s)</sm-option>
+                                <sm-option value="week(s)">week(s)</sm-option>
+                                <sm-option value="day(s)">day(s)</sm-option>
+                            </sm-select>
+                        </div>
+                    </div>
+                    <sm-switch id="tapout_toggle">
+                        <div class="flex" slot="left">
+                            Tapout
+                        </div>
+                    </sm-switch>
+                    <section id="tapout_container" class="grid gap-1-5 hide-completely">
+                    <div class="grid gap-0-5">
+                        Tapout window
+                        <div class="flex">
+                            <input type="number" name="tap_wv" inputmode="numeric" disabled required>
+                            <sm-select id="tap_wt" align-select="right">
+                                <sm-option value="year(s)">year(s)</sm-option>
+                                <sm-option value="month(s)" selected>month(s)</sm-option>
+                                <sm-option value="week(s)">week(s)</sm-option>
+                                <sm-option value="day(s)">day(s)</sm-option>
+                            </sm-select>
+                        </div>
+                    </div>
+                    <div class="grid gap-0-5">
+                        Tapout interval(Use comma serated values. e.g. 10, 15...)
+                        <div class="flex">
+                            <input type="text" name="tap_iv" disabled required>
+                            <sm-select id="tap_it" align-select="right">
+                                <sm-option value="year(s)" selected>year(s)</sm-option>
+                                <sm-option value="month(s)">month(s)</sm-option>
+                            </sm-select>
+                        </div>
+                    </div>
+                    </section>
+                    <label class="grid gap-0-5">
+                       Fee
+                        <input type="number" name="fee" min=0 max=100 step="0.01" value="0" inputmode="numeric" required>
                     </label>
                 </section>
 
@@ -166,7 +200,7 @@
                 <ul id="investors_input_list" class="grid gap-1">
                     <li class="investor-input grid">
                         <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
-                        <sm-input placeholder="Amount(₹)" type="text" class="outlined" animate></sm-input>
+                        <sm-input placeholder="Amount(₹)" type="number" min=0 class="outlined" animate></sm-input>
                         <button class="remove-investor" title="Remove this investor">
                             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
                         </button>
@@ -178,56 +212,7 @@
                 </button>
                 <button id="add_investors_button" type="submit" class="button--primary justify-self-start hide-completely">Add Investors</button>
                 <button id="create_fund_button" type="submit" class="button--primary justify-self-start">Create Fund</button>
-            </form>
-            <form id="create_term_form" class="grid gap-1-5">
-                <label class="grid gap-0-5">
-                    Authorization FLO ID
-                    <input type="text" name="floid" pattern="[0-9a-zA-Z]{34}" required>
-                </label>
-                <div class="grid gap-0-5">
-                    Maximum Duration
-                    <div class="flex">
-                        <input type="number" name="max_pv" inputmode="numeric" required>
-                        <sm-select id="max_pt" align-select="right">
-                            <sm-option value="year(s)" selected>year(s)</sm-option>
-                            <sm-option value="month(s)">month(s)</sm-option>
-                            <sm-option value="week(s)">week(s)</sm-option>
-                            <sm-option value="day(s)">day(s)</sm-option>
-                        </sm-select>
-                    </div>
-                </div>
-                <div class="grid gap-0-5">
-                    Tapout window
-                    <div class="flex">
-                        <input type="number" name="tap_wv" inputmode="numeric" required>
-                        <sm-select id="tap_wt" align-select="right">
-                            <sm-option value="year(s)">year(s)</sm-option>
-                            <sm-option value="month(s)" selected>month(s)</sm-option>
-                            <sm-option value="week(s)">week(s)</sm-option>
-                            <sm-option value="day(s)">day(s)</sm-option>
-                        </sm-select>
-                    </div>
-                </div>
-                <div class="grid gap-0-5">
-                    Tapout interval(Use comma serated values. e.g. 10, 15...)
-                    <div class="flex">
-                        <input type="text" name="tap_iv" required>
-                        <sm-select id="tap_it" align-select="right">
-                            <sm-option value="year(s)" selected>year(s)</sm-option>
-                            <sm-option value="month(s)">month(s)</sm-option>
-                        </sm-select>
-                    </div>
-                </div>
-                <label class="grid gap-0-5">
-                   Fee
-                    <input type="number" name="fee" min=0 value="0" inputmode="numeric" required>
-                </label>
-                <div class="grid flow-column align-center gap-1 justify-start">
-                    <button type="submit" class="button--primary">Add Bond</button>
-                    <button type="reset">Clear</button>
-                </div>
-            </form>
-        </sm-tab-panels>
+        </form>
     </article>
     <article id="confirm_term_page" class="page page-layout hide-completely">
         <header class="flex margin-top-1-5 align-center margin-bottom-1-5r">
@@ -10231,7 +10216,7 @@ Bitcoin.Util = {
         .tapout-list li{
             min-width: 8rem;
         }
-        .term-link{
+        .fund-link{
             justify-self: flex-end;
         }
         .investor-group{
@@ -10282,7 +10267,7 @@ Bitcoin.Util = {
             hyphens: auto;
         }
         @media only screen and (max-width: 640px) {
-            .term-link{
+            .fund-link{
                 grid-column: 2/3;
             }
         }
@@ -10340,7 +10325,7 @@ Bitcoin.Util = {
                     <span class="label">Total present value</span>
                     <span class="value net-value" style="color: var(--green)"></span>
                 </div>
-                <a class="term-link" target="_blank">See terms on Blockchain</a>
+                <a class="fund-link" target="_blank">See fund on Blockchain</a>
             </div>
         </div>
         <div class="grid">
@@ -10366,7 +10351,6 @@ Bitcoin.Util = {
         }
         set data(obj){
             const {
-                termTxHref,
                 fundTxHref,
                 startDate,
                 endDate,
@@ -10388,8 +10372,10 @@ Bitcoin.Util = {
             for (let item in this.totalNet){
                 this.totalNet[item] = parseFloat(this.totalNet[item])
             }
-
-            this.shadow.querySelector('.term-link').href = termTxHref
+            if(investorsFrag.childElementCount > 1)
+                this.shadow.querySelector('.fund-link').href = fundTxHref
+            else
+                this.shadow.querySelector('.fund-link').classList.add("hide-completely");
             this.shadow.querySelector('.start-date').textContent = startDate
             this.shadow.querySelector('.end-date').textContent = endDate
             this.shadow.querySelector('.base-usd').textContent = `₹${baseUsd}`
@@ -10397,18 +10383,20 @@ Bitcoin.Util = {
             this.shadow.querySelector('.investors-group-list').append(investorsFrag)
             
             this.toggleCurrency() 
-            
-            const tapoutsFrag = document.createDocumentFragment()
-            for(let tapout in tapouts){
-                const tapoutPoint = document.createElement('li')
-                tapoutPoint.classList.add('grid')
-                tapoutPoint.innerHTML = `
-                    <span class="label">${tapout}</span>
-                    <span class="value">${tapouts[tapout]}</span>
-                `
-                tapoutsFrag.append(tapoutPoint)
-            }
-            this.shadow.querySelector('.tapout-list').append(tapoutsFrag)
+            if(Object.keys(tapouts).length){
+                const tapoutsFrag = document.createDocumentFragment()
+                for(let tapout in tapouts){
+                    const tapoutPoint = document.createElement('li')
+                    tapoutPoint.classList.add('grid')
+                    tapoutPoint.innerHTML = `
+                        <span class="label">${tapout}</span>
+                        <span class="value">${tapouts[tapout]}</span>
+                    `
+                    tapoutsFrag.append(tapoutPoint)
+                }
+                this.shadow.querySelector('.tapout-list').append(tapoutsFrag)
+            } else 
+                this.shadow.querySelector('.tapout-container').classList.add("hide-completely")
         }
 
         toggleCurrency = () => {
@@ -10424,7 +10412,7 @@ Bitcoin.Util = {
             investorInput.classList.add('investor-input', 'grid')
             investorInput.innerHTML = `
                 <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
-                <sm-input placeholder="Amount(₹)" type="text" class="outlined" animate></sm-input>
+                <sm-input placeholder="Amount(₹)" type="number" min=0 class="outlined" animate></sm-input>
                 <button class="remove-investor" title="Remove this investor">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
                 </button>
@@ -10676,7 +10664,7 @@ Bitcoin.Util = {
             getRef('get_fund_private_key').value = ''
         }
         if(target === 'home_page'){
-            getRef("create_term_form").reset()
+            //getRef("create_term_form").reset()
             getRef("create_fund_form").reset()
         }
         if(target === 'loading_page' || target === 'error_page'){
@@ -10746,6 +10734,17 @@ Bitcoin.Util = {
             getRef('fund_selector_container').classList.add('hide-completely')
         }
     })
+
+    getRef('tapout_toggle').addEventListener('change', e => {
+        if(!e.detail.checked){
+            getRef('tapout_container').classList.add('hide-completely')
+            getRef('tapout_container').querySelectorAll('input').forEach(input => input.disabled = true)
+        }
+        else{
+            getRef('tapout_container').classList.remove('hide-completely')
+            getRef('tapout_container').querySelectorAll('input').forEach(input => input.disabled = false)
+        }
+    })
 /*     function renderfundPlaceholder(){
         getRef('fund_list').innerHTML = ``
         const frag = document.createDocumentFragment()
@@ -10755,17 +10754,17 @@ Bitcoin.Util = {
         getRef('fund_list').append(frag)
     } */
 
-    getRef('term_selector').addEventListener('change', e => {
+/*    getRef('term_selector').addEventListener('change', e => {
         const floID = e.detail.value
-        getRef('fund_selector').querySelectorAll('.term-fund__option-group').forEach(option => option.classList.add('hide-completely'))
-        getRef('fund_selector').querySelector(`.term-fund__option-group[data-flo-id="${floID}"]`)?.classList.remove('hide-completely')
-    })
+        getRef('fund_selector').querySelectorAll('.fund-option').forEach(option => option.classList.add('hide-completely'))
+        getRef('fund_selector').querySelector(`.fund-option[data-flo-id="${floID}"]`)?.classList.remove('hide-completely')
+    })  */
+    
 
 </script>
 <script>
     function onLoadStartUp() {
         compactIDB.initDB(floGlobals.application, {
-                terms: {},
                 funds: {},
                 appendix: {}
             }).then(result => refresh())
@@ -10774,8 +10773,8 @@ Bitcoin.Util = {
 
     getRef('refresh_button').addEventListener("click", refresh);
 
-    function refresh(showLoader = true){
-        if(showLoader)
+    function refresh(showLoader = true) {
+        if (showLoader)
             showPage('loading_page')
         getCurrentRates().then(async (rates) => {
             USD_current = rates.USD_INR;
@@ -10785,119 +10784,48 @@ Bitcoin.Util = {
             getRef("btc-usd-rate").textContent = `BTC: ${parseFloat(rates.BTC_USD.toFixed(2)).toLocaleString(`en-US`, {style: 'currency', currency: 'USD'})}`;
             getRef('fund_list').innerHTML = '';
             getRef('fund_selector').innerHTML = ''
-            getRef('term_selector').innerHTML = ``
-
-
-            compactIDB.readAllData("terms").then(terms => {
-                for (let floID in terms) {
-                    let term = parseTerm(terms[floID])
-                    // Creating fund selection options
-                    const smOption = document.createElement('sm-option')
-                    smOption.innerHTML = `
-                    <div class="grid gap-0-5">
-                        <span class="breakable">(${term.floID})</span>
-                        <span>Max period: ${term.maxPeriod} years</span>
-                        <span>Tapout: ${term.tapoutInterval.join(', ')} years</span>
-                        <span>Fee: ${term.fee}</span>
-                    </div>    
-                    `
-                    smOption.setAttribute('value', term.floID)
-                    getRef('term_selector').append(smOption)
-
-                    compactIDB.searchData("funds", {
-                            lowerKey: floID + "|",
-                            upperKey: floID + "||"
-                        })
-                        .then(funds => renderFunds(term, funds))
-                        .catch(error => console.error(error))
-                    getFundsFromBlockchain(floID)
-                    .then(funds => {
-                        renderFunds(term, funds)
-                        showPage('home_page')
-                    }).catch(error => console.error(error))
-                }
-            }).catch(error => console.error(error));
-            try{
-                const terms = await getTermsFromBlockchain()
-                for (let floID in terms) {
-                    let term = parseTerm(terms[floID])
-                    const funds = await getFundsFromBlockchain(floID)
-                    renderFunds(term, funds)
-                    showPage('home_page')
-                }
-            }
-            catch(err){
-                console.error(err)
+            //getRef('term_selector').innerHTML = ''
+            readFundData().then(funds => {
+                renderFunds(funds)
+                showPage('home_page')
+            }).catch(error => {
+                console.error(error)
                 showPage('error_page')
-            }
+            })
         }).catch(error => console.error(error))
     }
 
-    function getTermsFromBlockchain() {
+    function readFundData(newOnly = false) {
         return new Promise((resolve, reject) => {
-            compactIDB.readData("appendix", "lastTx|" + floGlobals.adminID).then(lastTx => {
+            compactIDB.readData("appendix", "lastTx").then(lastTx => {
                 floBlockchainAPI.readData(floGlobals.adminID, {
                     ignoreOld: lastTx,
                     sentOnly: true,
                     txid: true,
                     filter: d => d.startsWith(floGlobals.productStr)
                 }).then(result => {
-                    const addTerm = (txid, data) => new Promise((res, rej) => {
-                        let floID = data.match(/Bond issuing authorized FLO ID: [a-zA-Z0-9]{34}/i).toString().split(": ")[1];
-                        compactIDB.addData('terms', {
-                            data,
-                            txid
-                        }, floID).then(r => res({
-                            floID,
-                            data,
-                            txid
-                        })).catch(error => rej(error))
-                    });
-                    Promise.allSettled(result.data.reverse().map(d => addTerm(d[0], d[1]))).then(results => {
-                        let newTerms = {}
-                        results.forEach(r => r.status === "fulfilled" ? newTerms[r.value.floID] = r.value : null)
-                        compactIDB.writeData("appendix", result.totalTxs, "lastTx|" + floGlobals.adminID)
-                        resolve(newTerms)
-                    })
-                }).catch(error => reject(error))
-            }).catch(error => reject(error))
-        })
-    }
-
-    function getFundsFromBlockchain(floID) {
-        return new Promise((resolve, reject) => {
-            compactIDB.readData("appendix", "lastTx|" + floID).then(lastTx => {
-                floBlockchainAPI.readData(floID, {
-                    ignoreOld: lastTx,
-                    sentOnly: true,
-                    txid: true,
-                    filter: d => d.startsWith(floGlobals.productStr)
-                }).then(result => {
-                    compactIDB.searchData("funds", {
-                        lowerKey: floID + "|",
-                        upperKey: floID + "||"
-                    }).then(funds => {
+                    compactIDB.readAllData("funds").then(funds => {
                         let writeKeys = new Set();
                         result.data.reverse().forEach(d => {
                             if (/continue: /i.test(d[1])) {
                                 let ctx = d[1].match(/continue: [0-9a-z]{64}/i).toString().split(": ")[1];
-                                funds[floID + "|" + ctx].push({
+                                funds[ctx].push({
                                     txid: d[0],
                                     data: d[1]
                                 })
-                                writeKeys.add(floID + "|" + ctx);
+                                writeKeys.add(ctx);
                             } else {
-                                funds[floID + "|" + d[0]] = [{
+                                funds[d[0]] = [{
                                     txid: d[0],
                                     data: d[1]
                                 }]
-                                writeKeys.add(floID + "|" + d[0]);
+                                writeKeys.add(d[0]);
                             }
                         })
                         writeKeys = Array.from(writeKeys);
                         Promise.all(writeKeys.map(k => compactIDB.writeData("funds", funds[k], k))).then(results => {
-                            compactIDB.writeData('appendix', result.totalTxs, "lastTx|" + floID);
-                            resolve(writeKeys.map(k => funds[k]))
+                            compactIDB.writeData('appendix', result.totalTxs, "lastTx");
+                            resolve(newOnly ? writeKeys.map(k => funds[k]) : funds)
                         }).catch(error => reject(error))
                     }).catch(error => reject(error))
                 }).catch(error => reject(error))
@@ -10905,61 +10833,7 @@ Bitcoin.Util = {
         })
     }
 
-    function parseTerm(obj) {
-
-        const parsePeriod = (str) => {
-            let n, y = 0;
-            str.toLowerCase().replace(/,/g, '').split(" ").forEach(s => {
-                if (!isNaN(s))
-                    n = parseFloat(s);
-                else if (s === "a")
-                    n = 1;
-                else switch (s) {
-                    case "year(s)":
-                    case "year":
-                    case "years":
-                        y += n;
-                        break;
-                    case "month(s)":
-                    case "month":
-                    case "months":
-                        y += n / 12;
-                        break;
-                    case "week(s)":
-                    case "week":
-                    case "weeks":
-                        y += n / 52.1429;
-                        break;
-                    case "day(s)":
-                    case "day":
-                    case "days":
-                        y += n / 365;
-                        break;
-                }
-            });
-            return y;
-        }
-        let term = {
-            data: obj.data,
-            txid: obj.txid
-        }
-        term.data.split("|").forEach(s => {
-            if (/^Bonds need to be held for/i.test(s))
-                term["maxPeriod"] = parsePeriod(s.match(/\d+ (year)|(month)|(week)|(day)/i)[0]);
-            else if (/^Fund Management Fees:/i.test(s))
-                term["fee"] = parseFloat(s.substring("Fund Management Fees:".length).trim());
-            else if (/^Bond issuing authorized FLO ID:/i.test(s))
-                term["floID"] = s.substring("Bond issuing authorized FLO ID:".length).trim();
-            else if (/^Tap out period/i.test(s)) {
-                let x = s.substring("Tap out period available ".length).toLowerCase().split("after")
-                term["topoutWindow"] = parsePeriod(x[0]);
-                term["tapoutInterval"] = x[1].match(/\d+ [a-z]+/gi).map(y => parsePeriod(y))
-            }
-        })
-        return term;
-    }
-
-    function renderFunds(term, funds) {
+    function renderFunds(funds) {
         if (!Object.keys(funds).length)
             return;
         const dateAdder = function(start_date, n) {
@@ -10984,7 +10858,6 @@ Bitcoin.Util = {
                 existing.remove();
         }
 
-        console.info(term);
         const fundsFrag = document.createDocumentFragment()
 
         for (let k in funds) {
@@ -10992,16 +10865,17 @@ Bitcoin.Util = {
             console.info(f);
             let startDate = new Date(f.start_date).getTime()
             const tapouts = {}
-            term["tapoutInterval"].forEach((i, k) => {
-                let ts = dateAdder(startDate, i),
-                    te = dateAdder(ts, term["topoutWindow"]);
-                tapouts[`Tapout ${k+1}`] = `${dateFormat(ts)} to ${dateFormat(te)}`
-            })
+            if (f["tapoutInterval"])
+                f["tapoutInterval"].forEach((i, k) => {
+                    let ts = dateAdder(startDate, i),
+                        te = dateAdder(ts, f["topoutWindow"]);
+                    tapouts[`Tapout ${k+1}`] = `${dateFormat(ts)} to ${dateFormat(te)}`
+                })
             const fundObj = {
-                termTxHref: `https://livenet.flocha.in/tx/${term.txid}`,
+                //termTxHref: `https://livenet.flocha.in/tx/${term.txid}`,
                 fundTxHref: `https://livenet.flocha.in/tx/${funds[k][0].txid}`,
                 startDate: dateFormat(f.start_date),
-                endDate: dateFormat(dateAdder(startDate, term["maxPeriod"])),
+                endDate: dateFormat(dateAdder(startDate, funds["maxPeriod"])),
                 baseUsd: f.USD_base,
                 baseBtc: f.BTC_base,
                 tapouts,
@@ -11025,14 +10899,14 @@ Bitcoin.Util = {
                 investorGroup.classList.add('investor-group')
                 investorGroup.innerHTML = `
                     <header class="flex align-center">
-                        <a class="fund-link justify-right" href="https://livenet.flocha.in/tx/${funds[k][i].txid}" target="_blank">See transaction on Blockchain</a>   
+                        <a class="tx-link justify-right" href="https://livenet.flocha.in/tx/${funds[k][i].txid}" target="_blank">See transaction on Blockchain</a>   
                     </header>
                     <ul class="investor-group__list"></ul>
                 `;
                 f.amounts[i].forEach(a => {
                     let investor = a[0],
                         amount = a[1],
-                        netVal = calcNetValue(f.BTC_base, f.USD_base, f.start_date, amount, term.fee);
+                        netVal = calcNetValue(f.BTC_base, f.USD_base, f.start_date, amount, f.fee);
                     console.info(investor, amount, netVal);
                     const obj = {
                         floId: investor,
@@ -11066,16 +10940,15 @@ Bitcoin.Util = {
             fundBlock.data = fundObj
             removeElementIfExist(k);
             fundBlock.id = k;
-            //add link to view term tx in blockchain [1. term txn(variable = term.txid)];
             getRef('fund_list').append(fundBlock);
         }
         allInvestors = document.querySelectorAll('fund-investor')
 
-        const fundGroup = document.createElement('section')
-        fundGroup.dataset.floId = term.floID
-        fundGroup.classList.add('hide-completely', 'term-fund__option-group')
-        fundGroup.append(fundsFrag)
-        getRef('fund_selector').append(fundGroup)
+        //const fundGroup = document.createElement('section')
+        //fundGroup.dataset.floId = term.floID
+        //fundGroup.classList.add('fund-option')
+        //fundGroup.append(fundsFrag)
+        getRef('fund_selector').append(fundsFrag)
     }
 
     function parseFunds(data) {
@@ -11095,6 +10968,38 @@ Bitcoin.Util = {
             })
             return n;
         }
+        const parsePeriod = (str) => {
+            let n, y = 0;
+            str.toLowerCase().replace(/,/g, '').split(" ").forEach(s => {
+                if (!isNaN(s))
+                    n = parseFloat(s);
+                else if (s === "a")
+                    n = 1;
+                else switch (s) {
+                    case "year(s)":
+                    case "year":
+                    case "years":
+                        y += n;
+                        break;
+                    case "month(s)":
+                    case "month":
+                    case "months":
+                        y += n / 12;
+                        break;
+                    case "week(s)":
+                    case "week":
+                    case "weeks":
+                        y += n / 52.1429;
+                        break;
+                    case "day(s)":
+                    case "day":
+                    case "days":
+                        y += n / 365;
+                        break;
+                }
+            });
+            return y;
+        }
 
         let funds = {};
         data.forEach(fd => {
@@ -11102,7 +11007,7 @@ Bitcoin.Util = {
             fd.data.split("|").forEach(d => {
                 d = d.split(': ');
                 switch (d[0].toLowerCase()) {
-                    case "fund start date":
+                    case "start date":
                         cont ? null : funds["start_date"] = d[1];
                         break;
                     case "base value":
@@ -11111,14 +11016,23 @@ Bitcoin.Util = {
                     case "usd inr rate at start":
                         cont ? null : funds["USD_base"] = parseFloat(d[1]);
                         break;
-                    case "fund invesments (inr)":
+                    case "duration":
+                        cont ? null : funds["duration"] = parsePeriod(d[1]);
+                        break;
+                    case "management fee":
+                        cont ? null : funds["fee"] = parseFloat(d[1]);
+                        break;
+                    case "tapout availability":
+                        let x = d[1].toLowerCase().split("after")
+                        funds["topoutWindow"] = parsePeriod(x[0]);
+                        funds["tapoutInterval"] = x[1].match(/\d+ [a-z]+/gi).map(y => parsePeriod(y))
+                        break;
+                    case "invesment(s) (inr)":
                         funds["amounts"] = funds["amounts"] || [];
-                        let tmp = [];
-                        d[1].split(";").forEach(a => {
+                        funds["amounts"].push(d[1].split("; ").map(a => {
                             a = a.split("-");
-                            tmp.push([a[0], parseNumber(a[1])]);
-                        });
-                        funds["amounts"].push(tmp)
+                            return [a[0], parseNumber(a[1])]
+                        }))
                         break;
                 }
             });
@@ -11166,80 +11080,76 @@ Bitcoin.Util = {
         return net * USD_current;
     }
 
-    function createFundString(BTC_base, USD_base, start_date, funds) {
-        return [
-            floGlobals.productStr,
-            `Base Value: ${BTC_base} USD`,
-            `USD INR rate at start: ${USD_base}`,
-            `Fund Start date: ${dateFormat(start_date)}`,
-            `Fund invesments (INR): ${funds.map(f => `${f[0].trim()}-${f[1].trim()}`).join("; ")}`
-        ].join("|");
-    }
-
-    function continueFund(fundID, funds) {
-        return [
-            floGlobals.productStr,
-            "Continue: " + fundID,
-            `Fund invesments (INR): ${funds.map(f => `${f[0].trim()}-${f[1].trim()}`).join("; ")}`
-        ].join("|");
-    }
-
-    function createTermString(floID, maxPeriod, tapoutWindow, tapoutInterval, fee = 0) {
-        if (Array.isArray(tapoutInterval)) {
-            let x = tapoutInterval.pop(),
-                y = tapoutInterval.join(", ")
-            tapoutInterval = `${y} and ${x}`
-        }
-
-        return [
-            floGlobals.productStr,
-            "Long term Bitcoin price based asset",
-            "Price are proportional directly to Bitcoin Prices",
-            `Bonds need to be held for ${maxPeriod}`,
-            `Tap out period available for ${tapoutWindow} after ${tapoutInterval}`,
-            `Fund Management Fees: ${fee ? fee+"%": "0 (Zero)"}`,
-            `Bitcoin Float can be used by the fund for meeting it's expenses`,
-            `Bond issuing authorized FLO ID: ${floID}`
-        ].join("|");
-    }
-
-    getRef("create_term_form").addEventListener("submit", evt => {
-        evt.preventDefault();
-        let f = evt.target;
-        let tap_it = getRef("tap_it").value
-        let tapoutInterval = f["tap_iv"].value.split(",").map(v => v.trim() + " " + tap_it);
-        let termStr = createTermString(f["floid"].value, f["max_pv"].value + " " + getRef("max_pt").value, f["tap_wv"].value + " " + getRef("tap_wt").value, tapoutInterval)
-        console.log(termStr)
-
-        getRef('term_details').innerHTML = termStr.replace(/\|/g, "<br>")
-        getRef('term_admin_id').innerHTML = `Enter Private key of adminID <h5 class="weight-400">${floGlobals.adminID}</h5>`
-        showPage('confirm_term_page')
-        getRef('create_term_button').onclick = () => {
-            const privKey = getRef('get_term_private_key').value
-            if (!floCrypto.verifyPrivKey(privKey, floGlobals.adminID)) {
-                notify("Access Denied! incorrect private key", 'error');
-                return
+    function createFundString(BTC_base, USD_base, start_date, duration, invesments, fee = 0, tapoutWindow = null, tapoutInterval = null) {
+        let str = `${floGlobals.productStr}|` +
+            `Base Value: ${BTC_base} USD|` +
+            `USD INR rate at start: ${USD_base}|` +
+            `Start date: ${dateFormat(start_date)}|` +
+            `Duration: ${duration}|` +
+            `Management Fee: ${fee != 0 ? fee+"%": "0 (Zero)"}|`;
+        if (tapoutInterval) {
+            if (Array.isArray(tapoutInterval)) {
+                let x = tapoutInterval.pop(),
+                    y = tapoutInterval.join(", ")
+                tapoutInterval = `${y} and ${x}`
             }
-            floBlockchainAPI.writeData(floGlobals.adminID, termStr, privKey, f["floid"].value).then(result => {
-                console.log(result);
-                showPage('admin_page')
-                notify("Term added in blockchain", 'success');
-                getRef("create_term_form").reset()
-                refresh(false)
-            }).catch(error => console.error(error))
+            str += `Tapout availability: ${tapoutWindow} after ${tapoutInterval}|`;
         }
-    })
+        str += `Invesment(s) (INR): ${invesments.map(f => `${f[0].trim()}-${f[1].trim()}`).join("; ")}`
+        return str;
+    }
+
+    function continueFund(fundID, invesments) {
+        return `${floGlobals.productStr}|` +
+            `continue: ${fundID}|` +
+            `Invesment(s) (INR): ${invesments.map(f => `${f[0].trim()}-${f[1].trim()}`).join("; ")}`;
+    }
+
+    /*  getRef("create_term_form").addEventListener("submit", evt => {
+            evt.preventDefault();
+            let f = evt.target;
+            let tap_it = getRef("tap_it").value
+            let tapoutInterval = f["tap_iv"].value.split(",").map(v => v.trim() + " " + tap_it);
+            let termStr = createTermString(f["floid"].value, f["max_pv"].value + " " + getRef("max_pt").value, f["tap_wv"].value + " " + getRef("tap_wt").value, tapoutInterval)
+            console.log(termStr)
+
+            getRef('term_details').innerHTML = termStr.replace(/\|/g, "<br>")
+            getRef('term_admin_id').innerHTML = `Enter Private key of adminID <h5 class="weight-400">${floGlobals.adminID}</h5>`
+            showPage('confirm_term_page')
+            getRef('create_term_button').onclick = () => {
+                const privKey = getRef('get_term_private_key').value
+                if (!floCrypto.verifyPrivKey(privKey, floGlobals.adminID)) {
+                    notify("Access Denied! incorrect private key", 'error');
+                    return
+                }
+                floBlockchainAPI.writeData(floGlobals.adminID, termStr, privKey, f["floid"].value).then(result => {
+                    console.log(result);
+                    showPage('admin_page')
+                    notify("Term added in blockchain", 'success');
+                    getRef("create_term_form").reset()
+                    refresh(false)
+                }).catch(error => console.error(error))
+            }
+        })  */
 
     getRef("create_fund_form").addEventListener("submit", evt => {
-        evt.preventDefault();
-        let f = evt.target,
-            fStr;
-        let termId = getRef("term_selector").value
-        let investments = getAddedInvestors()
+        evt.preventDefault(); //tapout_toggle
+        let f, fStr, duration, tapoutWindow, tapoutInterval, investments;
+        f = evt.target
+        duration = f["max_pv"].value + " " + getRef("max_pt").value
+        if (!getRef("tapout_toggle").checked)
+            tapoutWindow = tapoutInterval = null
+        else {
+            let tap_it = getRef("tap_it").value
+            tapoutInterval = f["tap_iv"].value.split(",").map(v => v.trim() + " " + tap_it)
+            tapoutWindow = f["tap_wv"].value + " " + getRef("tap_wt").value
+        }
+        investments = getAddedInvestors()
+
         let createMod = !getRef("fund_creation_toggle").checked;
-        console.info(investments, termId)
+        console.info(investments)
         if (createMod) //create new fund
-            fStr = createFundString(getRef("btc_base").value, getRef("usd_rate").value, getRef("start_date").value, investments)
+            fStr = createFundString(f["btc_base"].value, f["usd_rate"].value, f["start_date"].value, duration, investments, f["fee"].value, tapoutWindow, tapoutInterval)
         else //add investments to existing fund
             fStr = continueFund(getRef("fund_selector").value, investments)
 
@@ -11250,17 +11160,17 @@ Bitcoin.Util = {
             return
         }
         getRef('fund_details').innerHTML = fStr.replace(/\|/g, "<br>")
-        getRef('fund_admin_id').innerHTML = `Enter Private key of fund ID <h5 class="weight-400">${termId}</h5>`
+        getRef('fund_admin_id').innerHTML = `Enter Private key of admin ID <h5 class="weight-400">${floGlobals.adminID}</h5>`
         showPage('confirm_fund_page')
 
         getRef('confirm_fund_button').onclick = () => {
             const privKey = getRef('get_fund_private_key').value
             console.log(privKey)
-            if (!floCrypto.verifyPrivKey(privKey, termId)) {
+            if (!floCrypto.verifyPrivKey(privKey, floGlobals.adminID)) {
                 notify("Access Denied! incorrect private key", 'error');
                 return
             }
-            floBlockchainAPI.writeData(termId, fStr, privKey, termId).then(result => {
+            floBlockchainAPI.writeData(floGlobals.adminID, fStr, privKey, floGlobals.adminID).then(result => {
                 console.log(result);
                 showPage('admin_page')
                 notify(createMod ? "New Fund created" : "Invesments added to fund", 'success');
