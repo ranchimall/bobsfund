@@ -10904,17 +10904,17 @@ Bitcoin.Util = {
             console.info(f);
             let startDate = new Date(f.start_date).getTime()
             const tapouts = {}
-            if (f["tapoutInterval"])
-                f["tapoutInterval"].forEach((i, k) => {
+            if (f.tapoutInterval)
+                f.tapoutInterval.forEach((i, k) => {
                     let ts = dateAdder(startDate, i),
-                        te = dateAdder(ts, f["topoutWindow"]);
+                        te = dateAdder(ts, f.topoutWindow);
                     tapouts[`Tapout ${k+1}`] = `${dateFormat(ts)} to ${dateFormat(te)}`
                 })
             const fundObj = {
                 //termTxHref: `https://livenet.flocha.in/tx/${term.txid}`,
                 fundTxHref: `https://livenet.flocha.in/tx/${funds[k][0].txid}`,
                 startDate: dateFormat(f.start_date),
-                endDate: dateFormat(dateAdder(startDate, funds["maxPeriod"])),
+                endDate: dateFormat(dateAdder(startDate, f.duration)),
                 baseUsd: f.USD_base,
                 baseBtc: f.BTC_base,
                 tapouts,
