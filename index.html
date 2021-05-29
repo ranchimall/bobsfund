@@ -113,6 +113,12 @@
             </sm-input>
             <button id="refresh_button" class="justify-right button--primary">Refresh</button>
         </header>
+        <div class="warning-container grid gap-1">
+            <p>
+                When redemption is due, redeem button will appear next to the FLO ID. Enter your private key to redeem.
+            </p>
+            <strong style="color: #fb3640">Do not enter private key in similar looking pages.</strong>    
+        </div>
         <ul id="fund_list"></ul>
         <div id="fund_list__empty-state" class="grid hide-completely">
             <svg class="icon icon--big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-4-6h8v2H8v-2zm0-3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
@@ -10186,6 +10192,9 @@ Bitcoin.Util = {
             line-height: 1.5;
             color: rgba(var(--text-color), 0.8);
         }
+        .hide-completely{
+            display: none !important;
+        }
         .fund-block{
             border-radius: 0.3rem;
             padding: 1rem;
@@ -10330,10 +10339,6 @@ Bitcoin.Util = {
         </div>
         <div class="grid">
             <h4 class="margin-bottom-0-5r">Investors</h4>
-            <p>
-                When redemption is due, redeem button will appear next to the FLO ID. Enter your private key to redeem.<br>
-                <strong style="color: #fb3640">Do not enter private key in similar looking pages.</strong>    
-            </p>
             <ul class="investors-group-list grid"></ul>
         </div>
     </li>
@@ -10349,6 +10354,19 @@ Bitcoin.Util = {
             this.totalInvestement = {}
             this.totalNet = {}
         }
+
+        get investors(){
+            return this.shadow.querySelectorAll('fund-investor')
+        }
+
+        get investorGroups(){
+            return this.shadow.querySelectorAll('.investor-group')
+        }
+        
+        get investorGroupList(){
+            return this.shadow.querySelectorAll('.investor-group__list')
+        }
+
         set data(obj){
             const {
                 fundTxHref,
@@ -10675,15 +10693,36 @@ Bitcoin.Util = {
         }
     }
 
-    let allInvestors
     getRef('search_investor').addEventListener('input', e => {
         throttle(() => {
-            allInvestors.forEach( child => {
-                if(child.dataset.floId.toLowerCase().includes(getRef('search_investor').value.trim().toLowerCase())){
-                    child.classList.remove('hide-completely')
+            document.querySelectorAll('fund-block').forEach(block => {
+                block.investors.forEach( child => {
+                    if(child.dataset.floId.toLowerCase().includes(getRef('search_investor').value.trim().toLowerCase())){
+                        child.classList.remove('hide-completely')
+                    }
+                    else{
+                        child.classList.add('hide-completely')
+                    }
+                })
+                block.investorGroupList.forEach(group => {
+                    if(Array.from(group.children).every(elem => elem.classList.contains('hide-completely'))){
+                        group.parentNode.classList.add('hide-completely')
+                    }
+                    else{
+                        group.parentNode.classList.remove('hide-completely')
+                    }
+                })
+                if(Array.from(block.investorGroups).every(elem => elem.classList.contains('hide-completely'))){
+                    block.classList.add('hide-completely')
                 }
                 else{
-                    child.classList.add('hide-completely')
+                    block.classList.remove('hide-completely')
+                }
+                if(Array.from(getRef('fund_list').children).every(elem => elem.classList.contains('hide-completely'))){
+                    getRef('fund_list__empty-state').classList.remove('hide-completely')
+                }
+                else{
+                    getRef('fund_list__empty-state').classList.add('hide-completely')
                 }
             })
         }, 100)
@@ -10942,8 +10981,7 @@ Bitcoin.Util = {
             fundBlock.id = k;
             getRef('fund_list').append(fundBlock);
         }
-        allInvestors = document.querySelectorAll('fund-investor')
-
+        
         //const fundGroup = document.createElement('section')
         //fundGroup.dataset.floId = term.floID
         //fundGroup.classList.add('fund-option')

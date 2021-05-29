@@ -668,6 +668,14 @@ sm-option {
   hyphens: auto;
 }
 
+.warning-container {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.3rem;
+  background-color: rgba(var(--foreground-color), 1);
+  box-shadow: 0 1rem 2rem -1rem rgba(0, 0, 0, 0.16);
+}
+
 #fund_list {
   display: grid;
   gap: 1.5rem;
@@ -675,7 +683,6 @@ sm-option {
 
 #fund_list__empty-state {
   padding: 4rem 0;
-  margin-top: -5rem;
   border-radius: 0.3rem;
   place-content: center;
   margin-bottom: 3rem;
