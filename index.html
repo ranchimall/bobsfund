@@ -10198,10 +10198,10 @@ Bitcoin.Util = {
         .fund-block__details > .grid:nth-of-type(1), .fund-block__details > .grid:nth-of-type(2) {
             grid-template-columns: 1fr 1fr;
         }
-        .fund-block__details > .grid:nth-of-type(3), .fund-block__details > .grid:nth-of-type(4) {
+        .tapout-container, .investment-container {
             grid-column: 1/3;
         }
-        .fund-block__details > .grid:nth-of-type(4){
+        .investment-container{
             gap: 1.5rem;
             justify-content: flex-start;
             grid-template-columns: 1fr 1fr;
@@ -10285,7 +10285,7 @@ Bitcoin.Util = {
                 justify-self: flex-end;
                 text-align: right;
             }
-            .fund-block__details > .grid:nth-of-type(4){
+            .investment-container{
                 grid-template-columns: auto auto 1fr;
             }
         }
@@ -10316,7 +10316,7 @@ Bitcoin.Util = {
                 <span class="value margin-bottom-0-5r">Tapouts</span>
                 <ul class="tapout-list"></ul>
             </div>
-            <div class="grid">
+            <div class="investment-container grid">
                 <div class="grid">
                     <span class="label">Total investment</span>
                     <span class="value total-investment"></span>
@@ -10375,7 +10375,7 @@ Bitcoin.Util = {
             if(investorsFrag.childElementCount > 1)
                 this.shadow.querySelector('.fund-link').href = fundTxHref
             else
-                this.shadow.querySelector('.fund-link').classList.add("hide-completely");
+                this.shadow.querySelector('.fund-link').remove()
             this.shadow.querySelector('.start-date').textContent = startDate
             this.shadow.querySelector('.end-date').textContent = endDate
             this.shadow.querySelector('.base-usd').textContent = `₹${baseUsd}`
@@ -10396,7 +10396,7 @@ Bitcoin.Util = {
                 }
                 this.shadow.querySelector('.tapout-list').append(tapoutsFrag)
             } else 
-                this.shadow.querySelector('.tapout-container').classList.add("hide-completely")
+                this.shadow.querySelector('.tapout-container').remove()
         }
 
         toggleCurrency = () => {
