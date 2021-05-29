@@ -116,7 +116,7 @@
         <ul id="fund_list"></ul>
         <div id="fund_list__empty-state" class="grid hide-completely">
             <svg class="icon icon--big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-4-6h8v2H8v-2zm0-3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
-            <h4>No bonds found</h4>
+            <h4>No Funds found</h4>
         </div>
     </main>
     <article id="admin_page" class="page page-layout hide-completely">
@@ -8306,7 +8306,7 @@ Bitcoin.Util = {
                 <span class="value amount-invested"></span>
             </div>
             <div class="transaction-column">
-                <span class="label">Present bond value</span>
+                <span class="label">Present value</span>
                 <span class="value net-value" style="color: var(--green)"></span>
             </div>
         </div>
@@ -10420,9 +10420,9 @@ Bitcoin.Util = {
             return investorInput
         },
         fundPlaceholder(){
-            const bond = document.createElement('li')
-            bond.classList.add('fund-placeholder', 'grid')
-            bond.innerHTML = `
+            const fund_ph = document.createElement('li')
+            fund_ph.classList.add('fund-placeholder', 'grid')
+            fund_ph.innerHTML = `
                 <div class="flex-grid justify-start">
                     <div class="placeholder__block"></div>
                     <div class="placeholder__block"></div>
@@ -10435,7 +10435,7 @@ Bitcoin.Util = {
                 </div>
                 <div class="placeholder__block justify-self-end"></div>
             `
-            return bond
+            return fund_ph
         }
     }
 
