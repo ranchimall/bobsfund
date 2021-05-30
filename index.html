@@ -10898,6 +10898,7 @@ Bitcoin.Util = {
         }
 
         const fundsFrag = document.createDocumentFragment()
+        let sortArray = [];
 
         for (let k in funds) {
             let f = parseFunds(funds[k]);
@@ -10979,9 +10980,16 @@ Bitcoin.Util = {
             fundBlock.data = fundObj
             removeElementIfExist(k);
             fundBlock.id = k;
-            getRef('fund_list').append(fundBlock);
+            let i = sortArray.length - 1;
+            while (i >= 0 && sortArray[i] < startDate) { //[9, 7, 5, 3]
+                sortArray[i + 1] = sortArray[i]
+                i--;
+            }
+            sortArray[i + 1] = startDate;
+            let list = getRef('fund_list')
+            list.insertBefore(fundBlock, list.childNodes[i + 1]);
         }
-        
+
         //const fundGroup = document.createElement('section')
         //fundGroup.dataset.floId = term.floID
         //fundGroup.classList.add('fund-option')
