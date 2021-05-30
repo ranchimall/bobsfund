@@ -10396,7 +10396,7 @@ Bitcoin.Util = {
                 this.shadow.querySelector('.fund-link').remove()
             this.shadow.querySelector('.start-date').textContent = startDate
             this.shadow.querySelector('.end-date').textContent = endDate
-            this.shadow.querySelector('.base-usd').textContent = `₹${baseUsd}`
+            this.shadow.querySelector('.base-usd').textContent = `${baseUsd.toLocaleString(`en-US`, {style: 'currency', currency: 'INR'})}`
             this.shadow.querySelector('.base-btc').textContent = `${baseBtc.toLocaleString(`en-US`, {style: 'currency', currency: 'USD'})}`
             this.shadow.querySelector('.investors-group-list').append(investorsFrag)
             
@@ -11000,7 +11000,7 @@ Bitcoin.Util = {
         const parseNumber = (str) => {
             let n = 0
             str.replace(/,/g, '').match(/[\d.]+ *[a-z]*/gi).forEach(s => {
-                let v = s.match(/\d+/),
+                let v = s.match(/\d+(.\d+)?/),
                     m = s.match(/[a-z]+/i);
                 n += parseFloat(v) * (m ? magnitude[m] : 1)
             })
