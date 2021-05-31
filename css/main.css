@@ -1,3 +1,4 @@
+@charset "UTF-8";
 * {
   padding: 0;
   margin: 0;
@@ -693,6 +694,26 @@ sm-option {
   height: 6rem;
   width: 6rem;
   justify-self: center;
+}
+
+fund-block:first-of-type::before {
+  display: inline-flex;
+  content: "• Latest Fund";
+  padding: 0.4rem 0.8rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: white;
+  background-color: var(--accent-color);
+  border-radius: 0.3rem 0.3rem 0 0;
+}
+fund-block:not(:last-of-type)::after {
+  display: flex;
+  content: "";
+  padding: 0.4rem 0;
+  font-weight: 700;
+  width: 100%;
+  background-color: var(--error-color);
+  border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .flex-grid {

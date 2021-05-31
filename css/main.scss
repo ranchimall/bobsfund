@@ -618,6 +618,31 @@ sm-option{
     }
 }
 
+fund-block{
+    &:first-of-type::before{
+        display: inline-flex;
+        content: '• Latest Fund';
+        padding: 0.4rem 0.8rem;
+        font-weight: 700;
+        font-size: 1rem;
+        color: white;
+        background-color: var(--accent-color);
+        border-radius: 0.3rem 0.3rem 0 0;
+    }
+    &:not(:last-of-type)::after{
+        display: flex;
+        content: '';
+        // justify-content: center;
+        padding: 0.4rem 0;
+        font-weight: 700;
+        width: 100%;
+        // font-size: 0.9rem;
+        // color: var(--background-color);
+        background-color: var(--error-color);
+        border-radius: 0 0 0.5rem 0.5rem;
+    }
+}
+
 .flex-grid{
     grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
 }
