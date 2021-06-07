@@ -7493,19 +7493,18 @@ Bitcoin.Util = {
         }
     }
 </script>
-<script id="floBlockchainAPI" version="2.0.1b">
+<script id="floBlockchainAPI" version="2.0.1e">
     /* FLO Blockchain Operator to send/receive data from blockchain using API calls*/
     const floBlockchainAPI = {
 
         util: {
             serverList: floGlobals.apiURL[floGlobals.blockchain].slice(0),
-            curPos: floCrypto.randInt(0, floGlobals.apiURL[floGlobals.blockchain].length),
+            curPos: floCrypto.randInt(0, floGlobals.apiURL[floGlobals.blockchain].length - 1),
             fetch_retry: function(apicall, rm_flosight) {
                 return new Promise((resolve, reject) => {
                     let i = this.serverList.indexOf(rm_flosight)
-                    if(i != -1)
-                        this.serverList.splice(i, 1);
-                    this.curPos = floCrypto.randInt(0, this.serverList.length)
+                    if (i != -1) this.serverList.splice(i, 1);
+                    this.curPos = floCrypto.randInt(0, this.serverList.length - 1)
                     this.fetch_api(apicall)
                         .then(result => resolve(result))
                         .catch(error => reject(error));
@@ -7532,6 +7531,10 @@ Bitcoin.Util = {
                         })
                     }
                 })
+            },
+
+            current: function() {
+                return this.serverList[this.curPos];
             }
         },
 
@@ -10915,8 +10918,8 @@ Bitcoin.Util = {
                     tapouts[`Tapout ${k+1}`] = `${dateFormat(ts)} to ${dateFormat(te)}`
                 })
             const fundObj = {
-                //termTxHref: `https://livenet.flocha.in/tx/${term.txid}`,
-                fundTxHref: `https://livenet.flocha.in/tx/${funds[k][0].txid}`,
+                //termTxHref: `${floBlockchainAPI.util.current()}tx/${term.txid}`,
+                fundTxHref: `${floBlockchainAPI.util.current()}tx/${funds[k][0].txid}`,
                 startDate: dateFormat(f.start_date),
                 endDate: dateFormat(dateAdder(startDate, f.duration)),
                 baseUsd: f.USD_base,
@@ -10942,7 +10945,7 @@ Bitcoin.Util = {
                 investorGroup.classList.add('investor-group')
                 investorGroup.innerHTML = `
                     <header class="flex align-center">
-                        <a class="tx-link justify-right" href="https://livenet.flocha.in/tx/${funds[k][i].txid}" target="_blank">See transaction on Blockchain</a>   
+                        <a class="tx-link justify-right" href="${floBlockchainAPI.util.current()}tx/${funds[k][i].txid}" target="_blank">See transaction on Blockchain</a>   
                     </header>
                     <ul class="investor-group__list"></ul>
                 `;
