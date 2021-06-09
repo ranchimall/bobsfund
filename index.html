@@ -119,7 +119,7 @@
             </p>
             <strong style="color: #fb3640">Do not enter private key in similar looking pages.</strong>    
         </div>
-        <ul id="fund_list"></ul>
+        <section id="fund_list"></ul>
         <div id="fund_list__empty-state" class="grid hide-completely">
             <svg class="icon icon--big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-4-6h8v2H8v-2zm0-3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
             <h4>No Funds found</h4>
@@ -10305,7 +10305,7 @@ Bitcoin.Util = {
             }
         }
     </style>
-    <li class="fund-block">
+    <section class="fund-block">
         <div class="fund-block__details grid margin-bottom-3r">
             <div class="grid flow-column gap-1">
                 <div class="grid">
@@ -10347,7 +10347,7 @@ Bitcoin.Util = {
             <h4 class="margin-bottom-0-5r">Investors</h4>
             <ul class="investors-group-list grid"></ul>
         </div>
-    </li>
+    </section>
     `
 
     customElements.define('fund-block', class extends HTMLElement {
@@ -10550,7 +10550,6 @@ Bitcoin.Util = {
     }
 
    window.addEventListener("load", () => {
-
         document.addEventListener("pointerdown", (e) => {
             if (e.target.closest("button, sm-button:not([disable]), .interact")) {
                 createRipple(e, e.target.closest("button, sm-button, .interact"));
@@ -10682,14 +10681,14 @@ Bitcoin.Util = {
         getRef(target).classList.remove('hide-completely')
         if(target === 'home_page'){
             clearAddedInvestors()
+            getRef("create_fund_form").reset()
+            if(window.location.hash !== ''){
+                getRef(`${window.location.hash.split('#').pop()}`).scrollIntoView({behavior: 'smooth', block: 'start'})
+            }
         }
         if(target !== 'confirm_term_page'){
             getRef('get_term_private_key').value = ''
             getRef('get_fund_private_key').value = ''
-        }
-        if(target === 'home_page'){
-            //getRef("create_term_form").reset()
-            getRef("create_fund_form").reset()
         }
         if(target === 'loading_page' || target === 'error_page'){
             getRef('main_header').classList.add('hide-completely')
