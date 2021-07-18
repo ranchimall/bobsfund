@@ -145,11 +145,11 @@
                     </label>
                     <label class="grid gap-0-5">
                         Base BTC value ($)
-                        <input type="number" name="btc_base" step="0.01" pattern="[\d,]+.?\d" required>
+                        <input type="number" name="btc_base" step="0.01" pattern="[\d,]+(.\d+)?" required>
                     </label>
                     <label class="grid gap-0-5">
                         Base USD rate (₹)
-                        <input type="number" name="usd_rate" step="0.01" required>
+                        <input type="number" name="usd_rate" min=0 step="0.01" required>
                     </label>
                     <div class="grid gap-0-5">
                         Maximum Duration
