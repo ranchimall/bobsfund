@@ -25,7 +25,6 @@
     <script>
         function onLoadStartUp() {
             floExchangeAPI.init().then(result => {
-                console.debug(result)
                 compactIDB.initDB(floGlobals.application, {
                     funds: {},
                     appendix: {}
