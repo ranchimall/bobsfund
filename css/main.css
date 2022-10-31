@@ -1,4 +1,3 @@
-@charset "UTF-8";
 * {
   padding: 0;
   margin: 0;
@@ -7,7 +6,7 @@
 }
 
 :root {
-  font-size: clamp(1rem, 1.2vmax, 1.2rem);
+  font-size: clamp(16px, 1.2vmax, 20px);
 }
 
 html,
@@ -45,28 +44,40 @@ body[data-theme=dark] sm-input.outlined {
   --active-placeholder-color: rgba(var(--text-color), 1);
 }
 
-.full-bleed {
-  grid-column: 1/4 !important;
-}
-
 .h1 {
-  font-size: 2.5rem;
+  font-size: 6rem;
 }
 
 .h2 {
-  font-size: 2rem;
+  font-size: 4rem;
 }
 
 .h3 {
-  font-size: 1.4rem;
+  font-size: 3rem;
 }
 
 .h4 {
-  font-size: 1rem;
+  font-size: 2rem;
 }
 
 .h5 {
-  font-size: 0.8rem;
+  font-size: 1.5rem;
+}
+
+.h6 {
+  font-size: 1.2rem;
+}
+
+.body-1 {
+  font-size: 1rem;
+}
+
+.body-2 {
+  font-size: 0.85rem;
+}
+
+.full-bleed {
+  grid-column: 1/4 !important;
 }
 
 .uppercase {
@@ -80,7 +91,7 @@ body[data-theme=dark] sm-input.outlined {
 p {
   font-size: 0.8;
   max-width: 70ch;
-  line-height: 1.5;
+  line-height: 1.7;
   color: rgba(var(--text-color), 0.8);
 }
 
@@ -90,94 +101,7 @@ img {
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
-}
-a:focus-visible {
-  box-shadow: 0 0 0 0.1rem rgba(var(--text-color), 1) inset;
-}
-
-button {
-  position: relative;
-  display: inline-flex;
-  overflow: hidden;
-  align-items: center;
-  background: none;
-  cursor: pointer;
-  outline: none;
-  color: inherit;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border-radius: 0.2rem;
-  padding: 0.5rem 0.6rem;
-  -webkit-tap-highlight-color: transparent;
-  border: none;
-}
-
-.button--primary {
-  background: var(--accent-color);
-  color: white;
-}
-.button--primary .icon {
-  fill: rgba(var(--foreground-color), 1);
-}
-
-button:focus-visible {
-  outline: rgba(var(--text-color), 1) 0.1rem solid;
-}
-
-a:-webkit-any-link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  background: none;
-  cursor: pointer;
-  outline: none;
-  color: inherit;
-  font-weight: 500;
-  font-size: 0.8rem;
-  border-radius: 0.3rem;
-  padding: 0.4rem 0.6rem;
-  align-self: flex-start;
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-  border: 1px solid rgba(var(--text-color), 0.8);
-}
-
-a:-moz-any-link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  background: none;
-  cursor: pointer;
-  outline: none;
-  color: inherit;
-  font-weight: 500;
-  font-size: 0.8rem;
-  border-radius: 0.3rem;
-  padding: 0.4rem 0.6rem;
-  align-self: flex-start;
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-  border: 1px solid rgba(var(--text-color), 0.8);
-}
-
-a:any-link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  background: none;
-  cursor: pointer;
-  outline: none;
-  color: inherit;
-  font-weight: 500;
-  font-size: 0.8rem;
-  border-radius: 0.3rem;
-  padding: 0.4rem 0.6rem;
-  align-self: flex-start;
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-  border: 1px solid rgba(var(--text-color), 0.8);
+  color: var(--accent-color);
 }
 
 a:-webkit-any-link:focus-visible {
@@ -190,6 +114,147 @@ a:-moz-any-link:focus-visible {
 
 a:any-link:focus-visible {
   outline: rgba(var(--text-color), 1) 0.1rem solid;
+}
+
+button,
+.button {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  position: relative;
+  display: inline-flex;
+  border: none;
+  background-color: transparent;
+  overflow: hidden;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 0.8rem;
+  border-radius: 0.3rem;
+  justify-content: center;
+}
+button:focus-visible,
+.button:focus-visible {
+  outline: var(--accent-color) solid medium;
+}
+button:not(:disabled),
+.button:not(:disabled) {
+  cursor: pointer;
+}
+
+.button {
+  background-color: rgba(var(--text-color), 0.02);
+  border: solid thin rgba(var(--text-color), 0.06);
+}
+.button--primary {
+  color: rgba(var(--background-color), 1) !important;
+}
+.button--primary .icon {
+  fill: rgba(var(--background-color), 1);
+}
+.button--danger {
+  color: var(--danger-color);
+}
+.button--danger .icon {
+  fill: var(--danger-color);
+}
+.button--primary {
+  background-color: var(--accent-color);
+}
+.button--colored {
+  color: var(--accent-color);
+}
+.button--colored .icon {
+  fill: var(--accent-color);
+}
+.button--small {
+  padding: 0.4rem 0.6rem;
+}
+.button--outlined {
+  border: solid rgba(var(--text-color), 0.3) 0.1rem;
+  background-color: rgba(var(--foreground-color), 1);
+}
+.button--transparent {
+  background-color: transparent;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+a:-webkit-any-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  color: var(--accent-color);
+  font-weight: 500;
+  font-size: 0.8rem;
+  border-radius: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  align-self: flex-start;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid var(--accent-color);
+}
+
+a:-moz-any-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  color: var(--accent-color);
+  font-weight: 500;
+  font-size: 0.8rem;
+  border-radius: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  align-self: flex-start;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid var(--accent-color);
+}
+
+a:any-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  color: var(--accent-color);
+  font-weight: 500;
+  font-size: 0.8rem;
+  border-radius: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  align-self: flex-start;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid var(--accent-color);
+}
+
+a:-webkit-any-link:focus-visible {
+  outline: rgba(var(--text-color), 1) 0.1rem solid;
+}
+
+a:-moz-any-link:focus-visible {
+  outline: rgba(var(--text-color), 1) 0.1rem solid;
+}
+
+a:any-link:focus-visible {
+  outline: rgba(var(--text-color), 1) 0.1rem solid;
+}
+
+.icon {
+  height: 1.2rem;
+  width: 1.2rem;
+  fill: rgba(var(--text-color), 1);
 }
 
 sm-input,
@@ -262,7 +327,7 @@ ul {
   align-items: flex-start;
 }
 
-.align-center {
+.align-items-center {
   align-items: center;
 }
 
@@ -434,12 +499,6 @@ ul {
 
 .observe-empty-state:not(:empty) ~ .empty-state {
   display: none;
-}
-
-.icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  fill: rgba(var(--text-color), 0.9);
 }
 
 #loading_page,
@@ -678,15 +737,12 @@ ul {
   align-items: center;
   justify-content: center;
   border: none;
-  height: 2.2rem;
-  width: 2.2rem;
   justify-self: flex-end;
   border-radius: 50%;
+  padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.16);
 }
 #profile_button .icon {
-  height: 1rem;
-  width: 1rem;
   fill: white;
 }
 
@@ -704,7 +760,7 @@ ul {
 }
 
 #home_page {
-  --side-padding: 8vw;
+  --side-padding: 5vw;
   display: flex;
   flex-direction: column;
   padding: 0 max(1rem, var(--side-padding));
@@ -714,7 +770,7 @@ ul {
 #homepage__hero-section {
   color: white;
   padding: 2rem 0 12rem 0;
-  margin: 0 calc(-1 * max(1rem, var(--side-padding))) -8rem calc(-1 * max(1rem, var(--side-padding)));
+  margin: 0 calc(-1 * max(1rem, var(--side-padding))) -5.5rem calc(-1 * max(1rem, var(--side-padding)));
   background-image: url(../assets/bg-1.svg);
   background-color: var(--accent-color);
   background-size: cover;
@@ -724,17 +780,28 @@ ul {
 }
 
 .fund-list__header {
+  display: flex;
+  align-items: center;
   color: white;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 #search_investor {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 1rem;
   --background: rgba(var(--foreground-color), 1);
+  border: solid thin rgba(var(--text-color), 0.2);
   color: rgba(var(--text-color), 1);
-  grid-area: search;
-  width: min(20rem, 100%);
-  justify-self: flex-end;
+  --padding: 1rem;
+  width: min(26rem, 100%);
+  align-self: center;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }
 
 .label {
@@ -753,6 +820,7 @@ ul {
   word-break: break-word;
   -webkit-hyphens: auto;
   hyphens: auto;
+  min-width: 6rem;
 }
 
 .warning-container {
@@ -764,7 +832,8 @@ ul {
 }
 
 #fund_list {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
 
@@ -780,30 +849,6 @@ ul {
   height: 6rem;
   width: 6rem;
   justify-self: center;
-}
-
-fund-block:first-of-type::before {
-  display: inline-flex;
-  content: "• Latest Fund";
-  padding: 0.4rem 0.8rem;
-  font-weight: 700;
-  font-size: 1rem;
-  color: white;
-  background-color: var(--accent-color);
-  border-radius: 0.3rem 0.3rem 0 0;
-}
-fund-block:not(:last-of-type)::after {
-  display: flex;
-  content: "";
-  padding: 0.4rem 0;
-  font-weight: 700;
-  width: 100%;
-  background-color: var(--error-color);
-  border-radius: 0 0 0.5rem 0.5rem;
-}
-
-.flex-grid {
-  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
 }
 
 form {
@@ -840,13 +885,6 @@ form select option {
 #fund_details {
   line-height: 1.7;
   margin-bottom: 2rem;
-}
-
-.flex-grid {
-  display: grid;
-  gap: 1rem;
-  justify-content: start;
-  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
 }
 
 .fund-placeholder {
@@ -899,20 +937,33 @@ form select option {
     opacity: 1;
   }
 }
-.fund-investor {
+.investors-list {
   display: grid;
   gap: 1rem;
-  padding: 1rem 0;
-  background-color: rgba(var(--foreground-color), 1);
+}
+
+.fund-investor {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: solid thin rgba(var(--text-color), 0.2);
+}
+.fund-investor__redeem {
+  background-color: var(--accent-color);
+  border-radius: 3rem;
+  padding: 0.8rem 1.5rem;
+  color: white;
+  filter: saturate(0.8);
+  align-self: flex-start;
 }
 
 .transaction-column {
   display: flex;
   flex-direction: column;
-}
-
-.space-between {
-  justify-content: space-between;
 }
 
 .fund-block {
@@ -923,18 +974,30 @@ form select option {
 }
 
 .fund-block__details {
-  gap: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 3rem;
 }
 
-.tapout-container,
-.investment-container {
-  grid-column: 1/3;
+.start-date {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3rem;
+  background-color: rgba(var(--text-color), 0.06);
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
 }
-
-.investment-container {
-  gap: 1.5rem;
-  justify-content: flex-start;
-  grid-template-columns: 1fr 1fr;
+.start-date::before {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--accent-color);
 }
 
 .tapout-list {
@@ -953,51 +1016,7 @@ form select option {
   justify-self: flex-end;
 }
 
-.investor-group {
-  display: grid;
-  padding: 0.5rem;
-  margin-top: 1.8rem;
-  border-radius: 0.3rem;
-  box-shadow: 0 0 0 1px rgba(var(--text-color), 0.3);
-}
-
-.investor-group header {
-  margin-top: -1.5rem;
-  margin-bottom: 0.5rem;
-  justify-self: flex-end;
-}
-
-.investor-group > * {
-  background-color: rgba(var(--foreground-color), 1);
-}
-
-.investor-group h4 {
-  padding: 0 0.5rem;
-  margin-left: -0.5rem;
-}
-
-.investor-group__list {
-  display: grid;
-  gap: 0.8rem;
-  grid-template-columns: minmax(0, 1fr);
-}
-
 @media only screen and (max-width: 640px) {
-  .h1 {
-    font-size: 2rem;
-  }
-  .h2 {
-    font-size: 1.8rem;
-  }
-  .h3 {
-    font-size: 1.3rem;
-  }
-  .h4 {
-    font-size: 1rem;
-  }
-  .h5 {
-    font-size: 0.8rem;
-  }
   #main_header {
     grid-template-areas: ". profile-button";
   }
@@ -1007,10 +1026,6 @@ form select option {
   #homepage__hero-section {
     padding: 2rem 0 20rem 0;
     margin-bottom: -16rem;
-  }
-  .fund-list__header {
-    grid-template-columns: auto 1fr;
-    grid-template-areas: ". ." "search search";
   }
   .investor-input {
     grid-template-columns: 1fr auto;
@@ -1040,29 +1055,19 @@ form select option {
   .dropdown__panel {
     left: auto;
   }
-  .fund-list__header {
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas: ". search .";
-  }
   .investor-input {
     grid-template-columns: 1.5fr 1fr auto;
     grid-template-areas: ". . close";
   }
   .fund-block {
+    padding: 3vw;
+  }
+  .fund-investor {
     padding: 1.5rem;
-  }
-  .fund-block__details {
-    grid-template-columns: 1fr 1fr;
-  }
-  .investor-group {
-    padding: 0.5rem 1rem;
   }
   .justify-self-end {
     justify-self: flex-end;
     text-align: right;
-  }
-  .investment-container {
-    grid-template-columns: auto auto 1fr;
   }
 }
 @media only screen and (min-width: 1280px) {
@@ -1071,10 +1076,6 @@ form select option {
   }
   .multi-form {
     grid-template-columns: 1fr 1fr;
-  }
-  .fund-investor {
-    gap: 1.5rem;
-    grid-template-columns: 1fr auto;
   }
 }
 @media (any-hover: hover) {
