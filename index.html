@@ -10,13 +10,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Overpass:wght@700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"
         rel="stylesheet">
     <script id="floGlobals">
         /* Constants for FLO blockchain operations !!Make sure to add this at begining!! */
         const floGlobals = {
             blockchain: "FLO",
-            adminID: "FFXy5pJnfzu2fCDLhpUremyXQjGtFpgCDN",
+            adminID: "FT9qkvuWXWBDRhHd42tDr5nMYFSx7bEhV7",
             application: "BobsFund"
         }
     </script>
@@ -44,7 +44,7 @@
 <body onload="onLoadStartUp()" data-theme="light">
     <sm-notifications id="notification_drawer"></sm-notifications>
     <article id="loading_page" class="page">
-        <h2 class="h2">Bob's Fund</h2>
+        <h3 class="h3 overpass">Bob's Fund</h3>
         <svg id="loader" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
             <polygon points="17.76 23.78 17.76 40.22 32 48.44 46.24 40.22 46.24 23.78 32 15.56 17.76 23.78" />
             <polyline points="17.76 23.78 32 32 46.24 23.78" />
@@ -62,8 +62,8 @@
             <h4 class="h4 color-0-8 weight-500">RanchiMall</h4>
         </footer>
     </article>
-    <article id="error_page" class="page hide-completely">
-        <h2 class="h2">Bob's Fund</h2>
+    <article id="error_page" class="page hidden">
+        <h3 class="h3 overpass">Bob's Fund</h3>
         <svg class="sad-face" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
             <g class="face">
                 <g class="eyes">
@@ -89,7 +89,7 @@
             <h4 class="h4 color-0-8 weight-500">RanchiMall</h4>
         </footer>
     </article>
-    <header id="main_header" class="hide-completely">
+    <header id="main_header" class="hidden">
         <div class="flex align-items-center">
             <svg id="main_header__logo" class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
@@ -97,7 +97,6 @@
             </svg>
             <div class="grid">
                 <h5 class="header__company-name">RanchiMall</h5>
-                <h3 class="header__app-name">Bob's Fund</h3>
             </div>
         </div>
         <div id="current_price" class="grid gap-1 flow-column align-items-center">
@@ -115,7 +114,7 @@
                     </g>
                 </svg>
             </button>
-            <ul id="profile_dropdown" class="dropdown__panel hide-completely">
+            <ul id="profile_dropdown" class="dropdown__panel hidden">
                 <li class="grid gap-0-5">
                     <h4 class="weight-700 margin-bottom-0-5r">Preferred currency</h4>
                     <p>This will convert all amounts to preferred currency.</p>
@@ -134,9 +133,9 @@
             </ul>
         </div>
     </header>
-    <main id="home_page" class="page hide-completely">
-        <section id="homepage__hero-section" class="full-bleed page-layout">
-            <h3 class="h3 margin-bottom-1r">Bob's Fund<br>on FLO Blockchain</h3>
+    <main id="home_page" class="page hidden">
+        <section id="homepage__hero-section">
+            <h3 class="h3 overpass margin-bottom-1r">Bob's Fund<br>on FLO Blockchain</h3>
             <p>
                 Bob's Fund is a 20 year long term Bitcoin price linked product. Investors are entitled to 100%
                 of Bitcoin price gains, but they must hold for 20 years. Over a very long time period, investor returns
@@ -147,9 +146,9 @@
         </section>
         <header class="fund-list__header">
             <h4 class="h4">Funds</h4>
-            <button id="refresh_button" class="justify-right button--primary">Refresh</button>
+            <button id="refresh_button" class="button justify-right">Refresh</button>
         </header>
-        <sm-input id="search_investor" type="search" placeholder="Search investor with FLO ID">
+        <sm-input id="search_investor" type="search" placeholder="Search investor with FLO address">
             <svg class="icon" slot="icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
                 width="24px" fill="#000000">
                 <path d="M0 0h24v24H0V0z" fill="none" />
@@ -162,7 +161,7 @@
         </div> -->
         <section>
             <ul id="fund_list"></ul>
-            <div id="fund_list__empty-state" class="grid hide-completely">
+            <div id="fund_list__empty-state" class="grid hidden">
                 <svg class="icon icon--big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
                     height="24">
                     <path fill="none" d="M0 0h24v24H0z" />
@@ -172,7 +171,7 @@
                 <h4>No Funds found</h4>
             </div>
     </main>
-    <article id="admin_page" class="page page-layout hide-completely">
+    <article id="admin_page" class="page page-layout hidden">
         <header class="flex margin-top-1-5 align-items-center margin-bottom-1-5r">
             <button onclick="showPage('home_page')">
                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -218,7 +217,7 @@
                         Tapout
                     </div>
                 </sm-switch>
-                <section id="tapout_container" class="grid gap-1-5 hide-completely">
+                <section id="tapout_container" class="grid gap-1-5 hidden">
                     <div class="grid gap-0-5">
                         Tapout window
                         <div class="flex">
@@ -248,14 +247,14 @@
                 </label>
             </section>
 
-            <div id="fund_selector_container" class="grid margin-bottom-0-5r hide-completely">
+            <div id="fund_selector_container" class="grid margin-bottom-0-5r hidden">
                 <span class="margin-bottom-0-5r">Select Fund</span>
                 <sm-select id="fund_selector"></sm-select>
             </div>
             <h4>Add Investors</h4>
             <ul id="investors_input_list" class="grid gap-1">
                 <li class="investor-input grid">
-                    <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
+                    <sm-input placeholder="FLO address" class="outlined" animate></sm-input>
                     <sm-input placeholder="Amount(₹)" type="number" min=0 class="outlined" animate></sm-input>
                     <button class="remove-investor" title="Remove this investor">
                         <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -274,13 +273,13 @@
                 </svg>
                 Add new
             </button>
-            <button id="add_investors_button" type="submit"
-                class="button--primary justify-self-start hide-completely">Add Investors</button>
+            <button id="add_investors_button" type="submit" class="button--primary justify-self-start hidden">Add
+                Investors</button>
             <button id="create_fund_button" type="submit" class="button--primary justify-self-start">Create
                 Fund</button>
         </form>
     </article>
-    <article id="confirm_term_page" class="page page-layout hide-completely">
+    <article id="confirm_term_page" class="page page-layout hidden">
         <header class="flex margin-top-1-5 align-items-center margin-bottom-1-5r">
             <button class="back-button" onclick="showPage('admin_page')">
                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -300,7 +299,7 @@
                 term</button>
         </form>
     </article>
-    <article id="confirm_fund_page" class="page page-layout hide-completely">
+    <article id="confirm_fund_page" class="page page-layout hidden">
         <header class="flex margin-top-1-5 align-items-center margin-bottom-1-5r">
             <button class="back-button" onclick="showPage('admin_page')">
                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -320,147 +319,73 @@
                 Fund</button>
         </form>
     </article>
+    <sm-popup id="redeem_popup">
+        <header slot="header" class="popup__header">
+            <button class="popup__header__close" onclick="closePopup()">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="none" d="M0 0h24v24H0z" />
+                    <path
+                        d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+                </svg>
+            </button>
+            <h3>Redeem fund</h3>
+        </header>
+        <div id="redeem_process">
+            <div id="redeem_precess__get_priv_key">
+                <sm-form class="grid gap-1-5">
+                    <div id="redeem__id"></div>
+                    <sm-input id="redeem_private_key" class="password-field" type="password"
+                        placeholder="FLO private key" error-text="Private key is invalid" autofocus data-private-key
+                        required>
+                        <label slot="right" class="interact">
+                            <input type="checkbox" class="hidden" autocomplete="off" readonly
+                                onchange="togglePrivateKeyVisibility(this)">
+                            <svg class="icon invisible" xmlns="http://www.w3.org/2000/svg" height="24px"
+                                viewBox="0 0 24 24" width="24px" fill="#000000">
+                                <title>Hide password</title>
+                                <path d="M0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
+                            </svg>
+                            <svg class="icon visible" xmlns="http://www.w3.org/2000/svg" height="24px"
+                                viewBox="0 0 24 24" width="24px" fill="#000000">
+                                <title>Show password</title>
+                                <path d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                            </svg>
+                        </label>
+                    </sm-input>
+                    <div class="multi-state-button">
+                        <button id="redeem_private_key_button" type="submit"
+                            class="button button--primary cta">Redeem</button>
+                    </div>
+                </sm-form>
+            </div>
+            <div class="grid gap-0-5 hidden justify-center text-center">
+                <svg class="icon user-action-result__icon success" xmlns="http://www.w3.org/2000/svg" height="24px"
+                    viewBox="0 0 24 24" width="24px" fill="#000000">
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+                </svg>
+                <h4>Redeem request sent</h4>
+                <p>Balance may take upto 30mins to reflect in your FLO address</p>
+            </div>
+            <div class="grid gap-0-5 hidden justify-center text-center">
+                <svg class="icon user-action-result__icon failed" xmlns="http://www.w3.org/2000/svg" height="24px"
+                    viewBox="0 0 24 24" width="24px" fill="#000000">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+                <h3>Failed</h3>
+                <p id="redeem_failed_message"></p>
+            </div>
+        </div>
+    </sm-popup>
 
 
     <script id="ui">
-        function formatAmount(amount = 0, currency = 'inr') {
-            amount = parseFloat(amount);
-            if (!amount)
-                return '₹0';
-            return amount.toLocaleString(currency === 'inr' ? `en-IN` : 'en-US', { style: 'currency', currency })
-        }
-        const render = {
-            investorInput() {
-                const investorInput = document.createElement('li')
-                investorInput.classList.add('investor-input', 'grid')
-                investorInput.innerHTML = `
-                <sm-input placeholder="FLO ID" class="outlined" animate></sm-input>
-                <sm-input placeholder="Amount(₹)" type="number" min=0 class="outlined" animate></sm-input>
-                <button class="remove-investor" title="Remove this investor">
-                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
-                </button>
-            `
-                return investorInput
-            },
-            fundPlaceholder() {
-                const fund_ph = document.createElement('li')
-                fund_ph.classList.add('fund-placeholder', 'grid')
-                fund_ph.innerHTML = `
-                <div class="flex-grid justify-start">
-                    <div class="placeholder__block"></div>
-                    <div class="placeholder__block"></div>
-                    <div class="placeholder__block"></div>
-                    <div class="placeholder__block"></div>
-                </div>
-                <div class="grid flow-column gap-1">
-                    <div class="placeholder__block"></div>
-                    <div class="placeholder__block"></div>
-                </div>
-                <div class="placeholder__block justify-self-end"></div>
-            `
-                return fund_ph
-            },
-            investorCard(details) {
-                const {
-                    floId,
-                    amountInvested,
-                    netValue,
-                    fundId,
-                    isRedeemable = false,
-                } = details
-                return html`
-                <li class="fund-investor" id=${`${fundId}_${floId}`} data-flo-id=${floId}>
-                    <div class="grid">
-                        <span class="label">FLO ID</span>
-                        <span class="value flo-id">${floId}</span>
-                    </div>
-                    <div class="flex gap-1-5">
-                        <div class="transaction-column">
-                            <span class="label">Invested</span>
-                            <span class="value amount-invested">${formatAmount(amountInvested[preferredCurrency], preferredCurrency)}</span>
-                        </div>
-                        <div class="transaction-column">
-                            <span class="label">Present value</span>
-                            <span class="value net-value" style="color: var(--green)">${formatAmount(netValue[preferredCurrency], preferredCurrency)}</span>
-                        </div>
-                    </div>
-                    <button class="button fund-investor__redeem" ?disabled=${!isRedeemable}>Redeem</button>
-                </li>
-                `
-            },
-            fundBlock(details) {
-                let {
-                    fundTxs,
-                    startDate,
-                    endDate,
-                    baseUsd,
-                    baseBtc,
-                    tapouts,
-                    totalInvestment,
-                    totalNet,
-                    investorsFrag
-                } = details
-                const tapoutsFrag = []
-                for (let tapout in tapouts) {
-                    const tapoutPoint = html`
-                            <li class="tapout-point grid">
-                                <span class="label">${tapout}</span>
-                                <span class="value">${tapouts[tapout]}</span>
-                            </li>`;
-                    tapoutsFrag.push(tapoutPoint)
-                }
-                const renderedFundTxs = fundTxs.map((tx, index) => {
-                    return html`<a href=${`${floBlockchainAPI.current_server}tx/${tx.txid}`}>Transaction ${index + 1}</a>`
-                })
-
-                return html.node`
-                <li class="fund-block">
-                    <h3 class="start-date">${startDate} Fund</h3>
-                    <div class="fund-block__details margin-bottom-3r">
-                        <div class="grid">
-                            <span class="label">End date</span>
-                            <span class="value end-date">${bobsFund.dateFormat(endDate)}</span>
-                        </div>
-                        <div class="flex flex-wrap gap-1">
-                            <div class="grid">
-                                <span class="label">Initial BTC value</span>
-                                <span class="value base-btc">${formatAmount(baseBtc[preferredCurrency], preferredCurrency)}</span>
-                            </div>
-                            <div class="grid">
-                                <span class="label">Base USD rate</span>
-                                <span class="value base-usd">${baseUsd.toLocaleString(`en-US`, { style: 'currency', currency: 'INR' })}</span>
-                            </div>
-                        </div>
-                        ${tapoutsFrag.length ? html`
-                            <div class="tapout-container grid">
-                                <span class="value margin-bottom-0-5r">Tapouts</span>
-                                <ul class="tapout-list">${tapoutsFrag}</ul>
-                            </div>` : ''}
-                        <div class="flex flex-wrap gap-1">
-                            <div class="grid">
-                                <span class="label">Total investment</span>
-                                <span class="value total-investment">${formatAmount(totalInvestment[preferredCurrency], preferredCurrency)}</span>
-                            </div>
-                            <div class="grid">
-                                <span class="label">Total present value</span>
-                                <span class="value net-value" style="color: var(--green)">${formatAmount(totalNet[preferredCurrency], preferredCurrency)}</span>
-                            </div>
-                        </div>
-                        <div class="grid">
-                            <span class="label">Fund transactions</span>
-                            <div class="flex gap-0-5">${renderedFundTxs}</div>
-                        </div>
-                    </div>
-                    <div class="grid">
-                        <h4 class="margin-bottom-0-5r">Investors</h4>
-                        <ul class="investors-list grid">${investorsFrag}</ul>
-                    </div>
-                </li>
-                `;
-            }
-        }
-
-
         const { html, render: renderElem } = uhtml;
         const domRefs = {}
         //Checks for internet connection status
@@ -512,6 +437,22 @@
 
 
         window.addEventListener("load", () => {
+            document.querySelectorAll('sm-input[data-flo-id]').forEach(input => input.customValidation = floCrypto.validateAddr)
+            document.querySelectorAll('sm-input[data-private-key]').forEach(input => input.customValidation = floCrypto.getPubKeyHex)
+            document.addEventListener('keyup', (e) => {
+                if (e.code === 'Escape') {
+                    closePopup()
+                }
+            })
+            document.addEventListener('keydown', e => {
+                if (e.key === '/') {
+                    e.preventDefault();
+                    getRef('search_investor').focusIn()
+                }
+            })
+            document.addEventListener('copy', () => {
+                notify('copied', 'success')
+            })
             document.addEventListener("pointerdown", (e) => {
                 if (e.target.closest("button:not([disabled]), .interact")) {
                     createRipple(e, e.target.closest("button, .interact"));
@@ -569,6 +510,387 @@
                 }, wait);
             };
         }
+        let zIndex = 50
+        // function required for popups or modals to appear
+        function openPopup(popupId, pinned) {
+            zIndex++
+            getRef(popupId).setAttribute('style', `z-index: ${zIndex}`)
+            getRef(popupId).show({ pinned })
+            return getRef(popupId);
+        }
+
+        // hides the popup or modal
+        function closePopup() {
+            if (popupStack.peek() === undefined)
+                return;
+            popupStack.peek().popup.hide()
+        }
+        function buttonLoader(id, show) {
+            const button = typeof id === 'string' ? getRef(id) : id;
+            button.disabled = show;
+            const animOptions = {
+                duration: floGlobals.prefersReducedMotion ? 0 : 200,
+                fill: 'forwards',
+                easing: 'ease'
+            }
+            if (show) {
+                button.animate([
+                    {
+                        clipPath: 'circle(100%)',
+                    },
+                    {
+                        clipPath: 'circle(0)',
+                    },
+                ], animOptions)
+                button.parentNode.append(document.createElement('sm-spinner'))
+            } else {
+                button.getAnimations().forEach(anim => anim.cancel())
+                const potentialTarget = button.parentNode.querySelector('sm-spinner')
+                if (potentialTarget) potentialTarget.remove();
+            }
+        }
+        document.addEventListener('popupopened', e => {
+            getRef('home_page').setAttribute('inert', '')
+        })
+        document.addEventListener('popupclosed', e => {
+            switch (e.detail.popup.id) {
+                case 'redeem_popup':
+                    showChildElement(getRef('redeem_process'), 0);
+                    buttonLoader('redeem_private_key_button', false)
+                    getRef('redeem_private_key_button').disabled = true;
+                    break;
+            }
+            if (popupStack.items.length === 0) {
+                getRef('home_page').removeAttribute('inert')
+            }
+        })
+        const slideInLeft = [
+            {
+                opacity: 0,
+                transform: 'translateX(1rem)'
+            },
+            {
+                opacity: 1,
+                transform: 'translateX(0)'
+            }
+        ]
+        const slideOutLeft = [
+            {
+                opacity: 1,
+                transform: 'translateX(0)'
+            },
+            {
+                opacity: 0,
+                transform: 'translateX(-1rem)'
+            },
+        ]
+        const slideInRight = [
+            {
+                opacity: 0,
+                transform: 'translateX(-1rem)'
+            },
+            {
+                opacity: 1,
+                transform: 'translateX(0)'
+            }
+        ]
+        const slideOutRight = [
+            {
+                opacity: 1,
+                transform: 'translateX(0)'
+            },
+            {
+                opacity: 0,
+                transform: 'translateX(1rem)'
+            },
+        ]
+        const slideInDown = [
+            {
+                opacity: 0,
+                transform: 'translateY(-1rem)'
+            },
+            {
+                opacity: 1,
+                transform: 'translateY(0)'
+            },
+        ]
+        const slideOutDown = [
+            {
+                opacity: 1,
+                transform: 'translateY(0)'
+            },
+            {
+                opacity: 0,
+                transform: 'translateY(1rem)'
+            },
+        ]
+        const slideInUp = [
+            {
+                opacity: 0,
+                transform: 'translateY(1rem)'
+            },
+            {
+                opacity: 1,
+                transform: 'translateY(0)'
+            },
+        ]
+        const slideOutUp = [
+            {
+                opacity: 1,
+                transform: 'translateY(0)'
+            },
+            {
+                opacity: 0,
+                transform: 'translateY(-1rem)'
+            },
+        ]
+
+        function showChildElement(id, index, options = {}) {
+            return new Promise((resolve) => {
+                const { mobileView = false, entry, exit } = options
+                const animOptions = {
+                    duration: floGlobals.prefersReducedMotion ? 0 : 150,
+                    easing: 'ease',
+                    fill: 'forwards'
+                }
+                const parent = typeof id === 'string' ? document.getElementById(id) : id;
+                const visibleElement = [...parent.children].find(elem => !elem.classList.contains(mobileView ? 'hide-on-mobile' : 'hidden'));
+                if (visibleElement === parent.children[index]) return;
+                visibleElement.getAnimations().forEach(anim => anim.cancel())
+                parent.children[index].getAnimations().forEach(anim => anim.cancel())
+                if (visibleElement) {
+                    if (exit) {
+                        parent.style.overflow = 'hidden'
+                        visibleElement.animate(exit, animOptions).onfinish = () => {
+                            visibleElement.classList.add(mobileView ? 'hide-on-mobile' : 'hidden')
+                            parent.style.overflow = ''
+                        }
+                        parent.children[index].classList.remove(mobileView ? 'hide-on-mobile' : 'hidden')
+                        if (entry)
+                            parent.children[index].animate(entry, animOptions).onfinish = () => resolve()
+                    } else {
+                        visibleElement.classList.add(mobileView ? 'hide-on-mobile' : 'hidden')
+                        parent.children[index].classList.remove(mobileView ? 'hide-on-mobile' : 'hidden')
+                        resolve()
+                    }
+                } else {
+                    parent.children[index].classList.remove(mobileView ? 'hide-on-mobile' : 'hidden')
+                    parent.children[index].animate(entry, animOptions).onfinish = () => resolve()
+                }
+            })
+        }
+        function togglePrivateKeyVisibility(input) {
+            const target = input.closest('sm-input')
+            target.type = target.type === 'password' ? 'text' : 'password';
+            target.focusIn()
+        }
+
+        function formatAmount(amount = 0, currency = 'inr') {
+            amount = parseFloat(amount);
+            if (!amount)
+                return '₹0';
+            return amount.toLocaleString(currency === 'inr' ? `en-IN` : 'en-US', { style: 'currency', currency })
+        }
+        const render = {
+            investorInput() {
+                const investorInput = document.createElement('li')
+                investorInput.classList.add('investor-input', 'grid')
+                investorInput.innerHTML = `
+                <sm-input placeholder="FLO address" class="outlined" animate></sm-input>
+                <sm-input placeholder="Amount(₹)" type="number" min=0 class="outlined" animate></sm-input>
+                <button class="remove-investor" title="Remove this investor">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>
+                </button>
+            `
+                return investorInput
+            },
+            fundPlaceholder() {
+                const fund_ph = document.createElement('li')
+                fund_ph.classList.add('fund-placeholder', 'grid')
+                fund_ph.innerHTML = `
+                <div class="flex-grid justify-start">
+                    <div class="placeholder__block"></div>
+                    <div class="placeholder__block"></div>
+                    <div class="placeholder__block"></div>
+                    <div class="placeholder__block"></div>
+                </div>
+                <div class="grid flow-column gap-1">
+                    <div class="placeholder__block"></div>
+                    <div class="placeholder__block"></div>
+                </div>
+                <div class="placeholder__block justify-self-end"></div>
+            `
+                return fund_ph
+            },
+            investmentCard(details) {
+                const {
+                    floId,
+                    amountInvested,
+                    netValue,
+                    fundId,
+                    hasMatured = false,
+                    allowsEarlyWithdrawal = false,
+                } = details
+                const isRedeemable = hasMatured || allowsEarlyWithdrawal
+                return html`
+                <li class="fund-investor" id=${`${fundId}_${floId}`}>
+                    <div class="grid">
+                        <span class="label">FLO address</span>
+                        <span class="value flo-id">${floId}</span>
+                    </div>
+                    <div class="flex gap-1-5">
+                        <div class="transaction-column">
+                            <span class="label">Invested</span>
+                            <span class="value amount-invested">${formatAmount(amountInvested[preferredCurrency], preferredCurrency)}</span>
+                        </div>
+                        <div class="transaction-column">
+                            <span class="label">Present value</span>
+                            <span class="value net-value" style="color: var(--green)">${formatAmount(netValue[preferredCurrency], preferredCurrency)}</span>
+                        </div>
+                    </div>
+                    <button class="button fund-investor__redeem" ?disabled=${!isRedeemable}>Redeem</button>
+                </li>
+                `
+            },
+            closedInvestmentCard(details) {
+                const {
+                    floId,
+                    amountInvested,
+                    fundId,
+                    BTC_net,
+                    endDate,
+                    finalAmount,
+                    USD_net,
+                    payment_refRef
+                } = details
+                return html`
+                <li class="fund-investor" id=${`${fundId}_${floId}`}>
+                    <div class="flex align-items-center space-between w-100">
+                        <span class="tag">Closed: ${bobsFund.dateFormat(endDate)}</span>
+                    </div>
+                    <div class="grid">
+                        <span class="label">FLO address</span>
+                        <span class="value flo-id">${floId}</span>
+                    </div>
+                    <div class="flex gap-1-5">
+                        <div class="transaction-column">
+                            <span class="label">Invested</span>
+                            <span class="value amount-invested">${formatAmount(amountInvested[preferredCurrency], preferredCurrency)}</span>
+                        </div>
+                        <div class="transaction-column">
+                            <span class="label">Withdrawn amount</span>
+                            <span class="value net-value" style="color: var(--green)">${formatAmount(finalAmount[preferredCurrency], preferredCurrency)}</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-1-5 align-center space-between w-100">
+                        <div class="transaction-column">
+                            <a href=${`${floBlockchainAPI.current_server}tx/${payment_refRef}`} target="_blank">See withdrawal transaction</a>
+                        </div>
+                    </div>
+                </li>
+                `
+            },
+            investmentCard(details) {
+                const {
+                    floId,
+                    amountInvested,
+                    netValue,
+                    fundId,
+                    hasMatured = false,
+                    allowsEarlyWithdrawal = false,
+                } = details
+                const isRedeemable = hasMatured || allowsEarlyWithdrawal
+                return html`
+                <li class="fund-investor" id=${`${fundId}_${floId}`}>
+                    <div class="grid">
+                        <span class="label">FLO address</span>
+                        <span class="value flo-id">${floId}</span>
+                    </div>
+                    <div class="flex gap-1-5">
+                        <div class="transaction-column">
+                            <span class="label">Invested</span>
+                            <span class="value amount-invested">${formatAmount(amountInvested[preferredCurrency], preferredCurrency)}</span>
+                        </div>
+                        <div class="transaction-column">
+                            <span class="label">Present value</span>
+                            <span class="value net-value" style="color: var(--green)">${formatAmount(netValue[preferredCurrency], preferredCurrency)}</span>
+                        </div>
+                    </div>
+                    <button class="button fund-investor__redeem" ?disabled=${!isRedeemable}>Redeem</button>
+                </li>
+                `
+            },
+            fundBlock(details) {
+                let {
+                    fundTxs,
+                    startDate,
+                    endDate,
+                    baseUsd,
+                    baseBtc,
+                    tapouts,
+                    totalInvestment,
+                    totalNet,
+                    investorsFrag
+                } = details
+                const tapoutsPoints = tapouts.map((tapout, index) => {
+                    const duration = `${bobsFund.dateFormat(tapout.start)} to ${bobsFund.dateFormat(tapout.end)}`
+                    return html`
+                        <li class="tapout-point grid">
+                            <span class="label">Tapout ${index + 1}</span>
+                            <span class="value">${duration}</span>
+                        </li>`;
+                })
+                const renderedFundTxs = fundTxs.map((tx, index) => {
+                    return html`<a href=${`${floBlockchainAPI.current_server}tx/${tx.txid}`} target="_blank">Transaction ${index + 1}</a>`
+                })
+
+                return html.node`
+                <li class="fund-block">
+                    <h4 class="start-date">${startDate} Fund</h4>
+                    <div class="fund-block__details margin-bottom-3r">
+                        <div class="grid">
+                            <span class="label">End date</span>
+                            <span class="value end-date">${bobsFund.dateFormat(endDate)}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1">
+                            <div class="grid">
+                                <span class="label">Initial BTC value</span>
+                                <span class="value base-btc">${formatAmount(baseBtc[preferredCurrency], preferredCurrency)}</span>
+                            </div>
+                            <div class="grid">
+                                <span class="label">Base USD rate</span>
+                                <span class="value base-usd">${baseUsd.toLocaleString(`en-US`, { style: 'currency', currency: 'INR' })}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-1">
+                            <div class="grid">
+                                <span class="label">Total investment</span>
+                                <span class="value total-investment">${formatAmount(totalInvestment[preferredCurrency], preferredCurrency)}</span>
+                            </div>
+                            <div class="grid">
+                                <span class="label">Total present value</span>
+                                <span class="value net-value" style="color: var(--green)">${formatAmount(totalNet[preferredCurrency], preferredCurrency)}</span>
+                            </div>
+                        </div>
+                        ${tapoutsPoints.length ? html`
+                            <div class="grid">
+                                <span class="value margin-bottom-0-5r">Tapouts</span>
+                                <ul class="tapout-list">${tapoutsPoints}</ul>
+                            </div>` : ''}
+                        <div class="grid">
+                            <span class="label">Fund transactions</span>
+                            <div class="flex gap-0-5 flex-wrap">${renderedFundTxs}</div>
+                        </div>
+                    </div>
+                    <div class="grid">
+                        <h4 class="margin-bottom-0-5r">Investors</h4>
+                        <ul class="investors-list grid">${investorsFrag}</ul>
+                    </div>
+                </li>
+                `;
+            }
+        }
+
 
         let preferredCurrency
 
@@ -618,7 +940,7 @@
                 const triggerDimensions = trigger.getBoundingClientRect()
                 getRef(target).setAttribute('style', `top: ${triggerDimensions.top + triggerDimensions.height + document.documentElement.scrollTop}px; right: calc(${window.innerWidth - triggerDimensions.right}px - 1.5rem)`)
             }
-            getRef(target).classList.remove('hide-completely')
+            getRef(target).classList.remove('hidden')
             getRef(target).animate([
                 { transform: 'translateY(-1rem)', opacity: 0 },
                 { transform: 'translateY(0)', opacity: 1 },
@@ -636,13 +958,13 @@
             ], options)
                 .onfinish = () => {
                     isDropdownOpen = false
-                    getRef(target).classList.add('hide-completely')
+                    getRef(target).classList.add('hidden')
                 }
         }
 
         function showPage(target) {
-            document.querySelector('.page:not(.hide-completely)')?.classList.add('hide-completely')
-            getRef(target).classList.remove('hide-completely')
+            document.querySelector('.page:not(.hidden)')?.classList.add('hidden')
+            getRef(target).classList.remove('hidden')
             if (target === 'home_page') {
                 clearAddedInvestors()
                 getRef("create_fund_form").reset()
@@ -655,32 +977,32 @@
                 getRef('get_fund_private_key').value = ''
             }
             if (target === 'loading_page' || target === 'error_page') {
-                getRef('main_header').classList.add('hide-completely')
+                getRef('main_header').classList.add('hidden')
             }
             else {
-                getRef('main_header').classList.remove('hide-completely')
+                getRef('main_header').classList.remove('hidden')
             }
         }
 
         getRef('search_investor').addEventListener('input', debounce(() => {
             document.querySelectorAll('.fund-block').forEach(block => {
                 block.querySelectorAll('.fund-investor').forEach(child => {
-                    if (child.dataset.floId.toLowerCase().includes(getRef('search_investor').value.trim().toLowerCase())) {
-                        child.classList.remove('hide-completely')
+                    if (child.id.toLowerCase().includes(getRef('search_investor').value.trim().toLowerCase())) {
+                        child.classList.remove('hidden')
                     }
                     else {
-                        child.classList.add('hide-completely')
+                        child.classList.add('hidden')
                     }
                 })
-                if (Array.from(block.querySelectorAll('.fund-investor')).every(elem => elem.classList.contains('hide-completely'))) {
-                    block.classList.add('hide-completely')
+                if (Array.from(block.querySelectorAll('.fund-investor')).every(elem => elem.classList.contains('hidden'))) {
+                    block.classList.add('hidden')
                 } else {
-                    block.classList.remove('hide-completely')
+                    block.classList.remove('hidden')
                 }
-                if (Array.from(getRef('fund_list').children).every(elem => elem.classList.contains('hide-completely'))) {
-                    document.getElementById('fund_list__empty-state')?.classList.remove('hide-completely')
+                if (Array.from(getRef('fund_list').children).every(elem => elem.classList.contains('hidden'))) {
+                    document.getElementById('fund_list__empty-state')?.classList.remove('hidden')
                 } else {
-                    document.getElementById('fund_list__empty-state')?.classList.add('hide-completely')
+                    document.getElementById('fund_list__empty-state')?.classList.add('hidden')
                 }
             })
         }, 100))
@@ -716,28 +1038,28 @@
 
         getRef('fund_creation_toggle').addEventListener('change', e => {
             if (e.target.checked) {
-                getRef('fund_details_form').classList.add('hide-completely')
+                getRef('fund_details_form').classList.add('hidden')
                 getRef('fund_details_form').querySelectorAll('input').forEach(input => input.disabled = true)
-                getRef('create_fund_button').classList.add('hide-completely')
-                getRef('add_investors_button').classList.remove('hide-completely')
-                getRef('fund_selector_container').classList.remove('hide-completely')
+                getRef('create_fund_button').classList.add('hidden')
+                getRef('add_investors_button').classList.remove('hidden')
+                getRef('fund_selector_container').classList.remove('hidden')
             }
             else {
-                getRef('fund_details_form').classList.remove('hide-completely')
-                getRef('create_fund_button').classList.remove('hide-completely')
+                getRef('fund_details_form').classList.remove('hidden')
+                getRef('create_fund_button').classList.remove('hidden')
                 getRef('fund_details_form').querySelectorAll('input').forEach(input => input.disabled = false)
-                getRef('add_investors_button').classList.add('hide-completely')
-                getRef('fund_selector_container').classList.add('hide-completely')
+                getRef('add_investors_button').classList.add('hidden')
+                getRef('fund_selector_container').classList.add('hidden')
             }
         })
 
         getRef('tapout_toggle').addEventListener('change', e => {
             if (!e.target.checked) {
-                getRef('tapout_container').classList.add('hide-completely')
+                getRef('tapout_container').classList.add('hidden')
                 getRef('tapout_container').querySelectorAll('input').forEach(input => input.disabled = true)
             }
             else {
-                getRef('tapout_container').classList.remove('hide-completely')
+                getRef('tapout_container').classList.remove('hidden')
                 getRef('tapout_container').querySelectorAll('input').forEach(input => input.disabled = false)
             }
         })
@@ -752,8 +1074,8 @@
 
         /*    getRef('term_selector').addEventListener('change', e => {
                 const floID = e.detail.value
-                getRef('fund_selector').querySelectorAll('.fund-option').forEach(option => option.classList.add('hide-completely'))
-                getRef('fund_selector').querySelector(`.fund-option[data-flo-id="${floID}"]`)?.classList.remove('hide-completely')
+                getRef('fund_selector').querySelectorAll('.fund-option').forEach(option => option.classList.add('hidden'))
+                getRef('fund_selector').querySelector(`.fund-option[data-flo-id="${floID}"]`)?.classList.remove('hidden')
             })  */
 
         getRef('refresh_button').addEventListener("click", refresh);
@@ -798,12 +1120,12 @@
                 let f = bobsFund.parse(funds[k].map(a => a.data));
                 // console.info(f);
                 let startDate = new Date(f.start_date).getTime()
-                const tapouts = {}
+                let tapouts = []
                 if (f.tapoutInterval)
-                    f.tapoutInterval.forEach((i, k) => {
-                        let ts = bobsFund.dateAdder(startDate, i),
-                            te = bobsFund.dateAdder(ts, f.topoutWindow);
-                        tapouts[`Tapout ${k + 1}`] = `${bobsFund.dateFormat(ts)} to ${bobsFund.dateFormat(te)}`
+                    tapouts = f.tapoutInterval.map((interval, index) => {
+                        const start = bobsFund.dateAdder(startDate, interval)
+                        const end = bobsFund.dateAdder(start, f.topoutWindow)
+                        return { start, end }
                     })
                 const fundObj = {
                     fundTxs: funds[k],
@@ -816,7 +1138,8 @@
                     },
                     tapouts,
                 }
-                const isRedeemable = new Date(fundObj.endDate) < new Date()
+                const hasMatured = new Date(fundObj.endDate) < new Date()
+                const allowsEarlyWithdrawal = tapouts.some(tapout => new Date(tapout.start) < new Date() && new Date(tapout.end) > new Date())
 
                 // Creating fund selection options
                 selectableFunds.push(html`
@@ -831,8 +1154,8 @@
                 const investorsFrag = []
                 let total_invested = total_net = 0;
                 for (let investor in f.investments) {
-                    let amount = f.investments[investor].amount,
-                        netVal = bobsFund.calcNetValue(f.BTC_base, BTC_current, f.USD_base, USD_current, amount, f.fee);
+                    const { amount, closed } = f.investments[investor]
+                    let netVal = bobsFund.calcNetValue(f.BTC_base, BTC_current, f.USD_base, USD_current, amount, f.fee);
                     const obj = {
                         fundId: k,
                         floId: investor,
@@ -844,11 +1167,13 @@
                             inr: netVal.toFixed(2),
                             usd: (netVal / USD_current).toFixed(2),
                         },
-                        isRedeemable,
+                        hasMatured,
+                        allowsEarlyWithdrawal,
                     }
                     total_invested += amount;
                     total_net += netVal;
-                    if (f.investments[investor].closed) {
+                    if (closed) {
+                        console.log(closed)
                         /*  TODO: UI: render closing data
                         if closed, netVal should not be displayed
                         f.investments[investor].closed -> Object {
@@ -861,9 +1186,16 @@
                             i: index of the txid (of closing tx) ie, funds[k][i].txid
                         }
                         */
+                        obj.finalAmount = {
+                            inr: closed.amountFinal.toFixed(2),
+                            usd: (closed.amountFinal / closed.USD_net).toFixed(2),
+                        }
+                        investorsFrag.push(render.closedInvestmentCard({ ...obj, ...closed }))
+                        floGlobals.investments[`${k}_${investor}`] = { amountInvested: obj.amountInvested, netValue: obj.finalAmount }
+                    } else {
+                        investorsFrag.push(render.investmentCard(obj))
+                        floGlobals.investments[`${k}_${investor}`] = { amountInvested: obj.amountInvested, netValue: obj.netValue }
                     }
-                    floGlobals.investments[`${k}_${investor}`] = { amountInvested: obj.amountInvested, netValue: obj.netValue }
-                    investorsFrag.push(render.investorCard(obj))
                 }
                 fundObj.totalInvestment = {
                     inr: total_invested.toFixed(2),
@@ -969,7 +1301,30 @@
                 }).catch(error => console.error(error))
             }
         })
-
+        getRef('fund_list').addEventListener('click', e => {
+            if (e.target.closest('.fund-investor__redeem')) {
+                const button = e.target.closest('.fund-investor__redeem')
+                floGlobals.redeemId = button.closest('.fund-investor').id.split('_')
+                const [fundId, investorId] = floGlobals.redeemId
+                renderElem(getRef('redeem__id'), html`<div class='label'>Investor address</div> <strong class="value">${investorId}</strong>`)
+                openPopup('redeem_popup')
+            }
+        })
+        getRef('redeem_private_key_button').addEventListener('click', e => {
+            buttonLoader('redeem_private_key_button', true)
+            const privKey = getRef('redeem_private_key').value
+            const [fundId, investorId] = floGlobals.redeemId
+            floExchangeAPI.closeBobsFundInvestment(fundId, investorId, privKey).then(result => {
+                console.log(result)
+                showChildElement(getRef('redeem_process'), 1, { entry: slideInLeft, exit: slideOutLeft });
+            }).catch(error => {
+                getRef('redeem_failed_message').textContent = error.message
+                showChildElement(getRef('redeem_process'), 2, { entry: slideInLeft, exit: slideOutLeft });
+                console.error(error)
+            }).finally(() => {
+                buttonLoader('redeem_private_key_button', false)
+            })
+        })
     </script>
 
 </body>
