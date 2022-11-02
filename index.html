@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Overpass:wght@700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,400;0,500;1,400;1,500;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"
         rel="stylesheet">
     <script id="floGlobals">
         /* Constants for FLO blockchain operations !!Make sure to add this at begining!! */
@@ -328,7 +328,7 @@
                         d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
                 </svg>
             </button>
-            <h3>Redeem fund</h3>
+            <h3>Withdraw fund</h3>
         </header>
         <div id="redeem_process">
             <div id="redeem_precess__get_priv_key">
@@ -357,8 +357,8 @@
                         </label>
                     </sm-input>
                     <div class="multi-state-button">
-                        <button id="redeem_private_key_button" type="submit"
-                            class="button button--primary cta">Redeem</button>
+                        <button id="redeem_private_key_button" type="submit" class="button button--primary cta">Confirm
+                            withdrawal</button>
                     </div>
                 </sm-form>
             </div>
@@ -368,7 +368,7 @@
                     <path d="M0 0h24v24H0V0z" fill="none" />
                     <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
                 </svg>
-                <h4>Redeem request sent</h4>
+                <h4>Withdraw request sent</h4>
                 <p>Balance may take upto 30mins to reflect in your FLO address</p>
             </div>
             <div class="grid gap-0-5 hidden justify-center text-center">
@@ -748,7 +748,7 @@
                             <span class="value net-value" style="color: var(--green)">${formatAmount(netValue[preferredCurrency], preferredCurrency)}</span>
                         </div>
                     </div>
-                    <button class="button fund-investor__redeem" ?disabled=${!isRedeemable}>Redeem</button>
+                    <button class="button fund-investor__redeem" ?disabled=${!isRedeemable}>Withdraw</button>
                 </li>
                 `
             },
@@ -816,7 +816,7 @@
                             <span class="value net-value" style="color: var(--green)">${formatAmount(netValue[preferredCurrency], preferredCurrency)}</span>
                         </div>
                     </div>
-                    <button class="button fund-investor__redeem" ?disabled=${!isRedeemable}>Redeem</button>
+                    <button class="button fund-investor__redeem" ?disabled=${!isRedeemable}>Withdraw</button>
                 </li>
                 `
             },
@@ -1171,7 +1171,6 @@
                         allowsEarlyWithdrawal,
                     }
                     total_invested += amount;
-                    total_net += netVal;
                     if (closed) {
                         console.log(closed)
                         /*  TODO: UI: render closing data
@@ -1186,6 +1185,7 @@
                             i: index of the txid (of closing tx) ie, funds[k][i].txid
                         }
                         */
+                        total_net += closed.amountFinal;
                         obj.finalAmount = {
                             inr: closed.amountFinal.toFixed(2),
                             usd: (closed.amountFinal / closed.USD_net).toFixed(2),
@@ -1193,6 +1193,7 @@
                         investorsFrag.push(render.closedInvestmentCard({ ...obj, ...closed }))
                         floGlobals.investments[`${k}_${investor}`] = { amountInvested: obj.amountInvested, netValue: obj.finalAmount }
                     } else {
+                        total_net += netVal;
                         investorsFrag.push(render.investmentCard(obj))
                         floGlobals.investments[`${k}_${investor}`] = { amountInvested: obj.amountInvested, netValue: obj.netValue }
                     }
@@ -1317,6 +1318,11 @@
             floExchangeAPI.closeBobsFundInvestment(fundId, investorId, privKey).then(result => {
                 console.log(result)
                 showChildElement(getRef('redeem_process'), 1, { entry: slideInLeft, exit: slideOutLeft });
+                const redeemButton = document.getElementById(floGlobals.redeemId.join('_'))?.querySelector('.fund-investor__redeem')
+                if (redeemButton) {
+                    redeemButton.textContent = 'Redeemed'
+                    redeemButton.disabled = true
+                }
             }).catch(error => {
                 getRef('redeem_failed_message').textContent = error.message
                 showChildElement(getRef('redeem_process'), 2, { entry: slideInLeft, exit: slideOutLeft });

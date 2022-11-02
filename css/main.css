@@ -55,6 +55,16 @@ body[data-theme=dark] a:any-link {
   font-weight: 700;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Overpass", sans-serif;
+  font-weight: 700;
+}
+
 .h1 {
   font-size: 6rem;
 }
@@ -549,12 +559,25 @@ ul {
 }
 
 .popup__header {
+  position: relative;
   display: grid;
   gap: 0.5rem;
   width: 100%;
   padding: 0 1.5rem 0 0.5rem;
   align-items: center;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
+}
+.popup__header > * {
+  grid-row: 1;
+}
+.popup__header h3,
+.popup__header h4 {
+  grid-column: 1/-1;
+  justify-self: center;
+  align-self: center;
+}
+.popup__header__close {
+  grid-column: 1;
 }
 
 #loading_page,
