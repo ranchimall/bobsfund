@@ -6,7 +6,7 @@
 }
 
 :root {
-  font-size: clamp(16px, 1.2vmax, 20px);
+  font-size: clamp(16px, 1.2vmax, 32px);
 }
 
 html,
@@ -17,7 +17,6 @@ body {
 
 body {
   --accent-color: #2353ff;
-  --light-shade: rgba(var(--text-color), 0.06);
   --text-color: 20, 20, 20;
   --foreground-color: 252, 253, 255;
   --background-color: 241, 243, 248;
@@ -29,7 +28,7 @@ body {
 }
 
 body[data-theme=dark] {
-  --accent-color: #2353ff;
+  --accent-color: #7e9aff;
   --text-color: 200, 200, 200;
   --foreground-color: 27, 28, 29;
   --background-color: 21, 22, 22;
@@ -39,15 +38,6 @@ body[data-theme=dark] {
 }
 body[data-theme=dark] ::-webkit-calendar-picker-indicator {
   filter: invert(1);
-}
-body[data-theme=dark] a:-webkit-any-link {
-  filter: saturate(0.5) brightness(2);
-}
-body[data-theme=dark] a:-moz-any-link {
-  filter: saturate(0.5) brightness(2);
-}
-body[data-theme=dark] a:any-link {
-  filter: saturate(0.5) brightness(2);
 }
 
 .overpass {
@@ -76,7 +66,6 @@ h6 {
 .h3 {
   font-size: 3rem;
   line-height: 1.1;
-  letter-spacing: -0.02em;
 }
 
 .h4 {
@@ -97,10 +86,6 @@ h6 {
 
 .body-2 {
   font-size: 0.85rem;
-}
-
-.full-bleed {
-  grid-column: 1/4 !important;
 }
 
 .uppercase {
@@ -128,15 +113,15 @@ a {
 }
 
 a:-webkit-any-link:focus-visible {
-  outline: rgba(var(--text-color), 1) 0.1rem solid;
+  outline: var(--accent-color) medium solid;
 }
 
 a:-moz-any-link:focus-visible {
-  outline: rgba(var(--text-color), 1) 0.1rem solid;
+  outline: var(--accent-color) medium solid;
 }
 
 a:any-link:focus-visible {
-  outline: rgba(var(--text-color), 1) 0.1rem solid;
+  outline: var(--accent-color) medium solid;
 }
 
 button,
@@ -205,7 +190,8 @@ button:not(:disabled),
 }
 
 button:disabled {
-  opacity: 0.5;
+  cursor: not-allowed;
+  filter: saturate(0);
 }
 
 .cta {
@@ -322,10 +308,6 @@ sm-input,
 sm-textarea {
   --border-radius: 0.5rem;
   --background: rgba(var(--text-color), 0.06);
-}
-
-sm-button {
-  --border-radius: 0.5rem;
 }
 
 ul {
@@ -750,7 +732,7 @@ ul {
   gap: 1.5rem;
   padding: 1rem;
   align-items: center;
-  background-color: var(--accent-color);
+  background-color: #2353ff;
   color: white;
 }
 
@@ -820,11 +802,6 @@ ul {
   fill: white;
 }
 
-#theme_switcher {
-  overflow: hidden;
-  width: 100%;
-}
-
 .page-layout {
   display: grid;
   grid-template-columns: 1rem minmax(0, 1fr) 1rem;
@@ -843,10 +820,10 @@ ul {
 
 #homepage__hero-section {
   color: white;
-  padding: 2rem var(--side-padding) 9rem var(--side-padding);
-  margin: 0 calc(-1 * max(1rem, var(--side-padding))) -5.5rem calc(-1 * max(1rem, var(--side-padding)));
+  padding: 2rem var(--side-padding) 6rem var(--side-padding);
+  margin: 0 calc(-1 * max(1rem, var(--side-padding))) -1.8rem calc(-1 * max(1rem, var(--side-padding)));
   background-image: url(../assets/bg-1.svg);
-  background-color: var(--accent-color);
+  background-color: #2353ff;
   background-size: cover;
 }
 #homepage__hero-section p {
@@ -855,14 +832,11 @@ ul {
 
 #refresh_button {
   color: var(--accent-color);
-  background-color: white;
   border: solid thin rgba(0, 0, 0, 0.2);
 }
 
 .fund-list__header {
   display: flex;
-  align-items: center;
-  color: white;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
@@ -967,56 +941,6 @@ form select option {
   margin-bottom: 2rem;
 }
 
-.fund-placeholder {
-  gap: 1rem;
-  padding: 1rem;
-  border-radius: 0.3rem;
-  background-color: rgba(var(--foreground-color), 1);
-  box-shadow: 0 1rem 2rem -1rem rgba(0, 0, 0, 0.16);
-}
-.fund-placeholder .placeholder__block:first-of-type {
-  width: min(24rem, 100%);
-}
-.fund-placeholder:nth-of-type(2) .placeholder__block {
-  -webkit-animation-delay: 0.3s;
-          animation-delay: 0.3s;
-}
-.fund-placeholder:nth-of-type(3) .placeholder__block {
-  -webkit-animation-delay: 0.6s;
-          animation-delay: 0.6s;
-}
-.fund-placeholder:nth-of-type(4) .placeholder__block {
-  -webkit-animation-delay: 0.8s;
-          animation-delay: 0.8s;
-}
-
-.placeholder__block {
-  display: flex;
-  border-radius: 0.3rem;
-  min-width: 9rem;
-  padding: 1.2rem 1rem;
-  -webkit-animation: pulse alternate 0.6s ease infinite;
-          animation: pulse alternate 0.6s ease infinite;
-  background-color: rgba(var(--text-color), 0.1);
-}
-
-@-webkit-keyframes pulse {
-  from {
-    opacity: 0.4;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes pulse {
-  from {
-    opacity: 0.4;
-  }
-  to {
-    opacity: 1;
-  }
-}
 .investors-list {
   display: grid;
   gap: 1rem;
@@ -1035,12 +959,11 @@ form select option {
 .fund-investor > .grid:first-of-type {
   width: min(40ch, 100%);
 }
-.fund-investor__redeem {
+.fund-investor__withdraw {
   background-color: var(--accent-color);
   border-radius: 3rem;
   padding: 0.8rem 1.5rem;
-  color: white;
-  filter: saturate(0.8);
+  color: rgba(var(--background-color), 1);
   align-self: flex-start;
 }
 .fund-investor .tag {

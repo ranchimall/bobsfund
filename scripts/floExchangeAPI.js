@@ -4,7 +4,7 @@
     const exchangeAPI = EXPORTS;
 
     const DEFAULT = {
-        marketID: floGlobals.marketID || "FKAEdnPfjXLHSYwrXQu377ugN4tXU7VGdf",
+        marketID: floGlobals.marketID || "FMxYC7gYZhouzqtHZukGnPiQ8nvG4CMzXM",
         marketApp: "exchange"
     }
 
