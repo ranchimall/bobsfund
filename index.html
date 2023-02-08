@@ -25,6 +25,7 @@
     <script src="scripts/floBlockchainAPI.js"></script>
     <script src="scripts/floExchangeAPI.js"></script>
     <script src="scripts/compactIDB.js"></script>
+    <script src="scripts/btcOperator.js"></script>
     <script src="scripts/bobs-fund.js"></script>
     <script src="scripts/components.min.js"></script>
     <script src="https://unpkg.com/uhtml@3.0.1/es.js"></script>
@@ -147,7 +148,7 @@
                 every investor, thus the interests of fund manager, and fund investors are totally aligned.
             </p>
         </section>
-        <sm-input id="search_investor" type="search" placeholder="Search investor with FLO address">
+        <sm-input id="search_investor" type="search" placeholder="Search investor with FLO/BTC address">
             <svg class="icon" slot="icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
                 width="24px" fill="#000000">
                 <path d="M0 0h24v24H0V0z" fill="none" />
@@ -733,11 +734,18 @@
                     allowsEarlyWithdrawal = false,
                 } = details
                 const isRedeemable = hasMatured || allowsEarlyWithdrawal
+                const btcId = btcOperator.convert.legacy2bech(floId)
                 return html`
-                <li class="fund-investor" id=${`${fundId}_${floId}`}>
-                    <div class="grid">
-                        <span class="label">FLO address</span>
-                        <span class="value flo-id">${floId}</span>
+                <li class="fund-investor" id=${`${fundId}_${floId}`} .dataset=${{ btcId }}>
+                    <div class="grid gap-1">
+                        <div class="grid">
+                            <span class="label">FLO address</span>
+                            <span class="value flo-id">${floId}</span>
+                        </div>
+                        <div class="grid">
+                            <span class="label">BTC address</span>
+                            <span class="value btc-id">${btcId}</span>
+                        </div>
                     </div>
                     <div class="flex gap-1-5">
                         <div class="transaction-column">
@@ -764,14 +772,21 @@
                     USD_net,
                     payment_refRef
                 } = details
+                const btcId = btcOperator.convert.legacy2bech(floId)
                 return html`
-                <li class="fund-investor" id=${`${fundId}_${floId}`}>
+                <li class="fund-investor" id=${`${fundId}_${floId}`} .dataset=${{ btcId }}>
                     <div class="flex align-items-center space-between w-100">
                         <span class="tag">Closed: ${bobsFund.dateFormat(endDate)}</span>
                     </div>
-                    <div class="grid">
-                        <span class="label">FLO address</span>
-                        <span class="value flo-id">${floId}</span>
+                    <div class="grid gap-1">
+                        <div class="grid">
+                            <span class="label">FLO address</span>
+                            <span class="value flo-id">${floId}</span>
+                        </div>
+                        <div class="grid">
+                            <span class="label">BTC address</span>
+                            <span class="value btc-id">${btcId}</span>
+                        </div>
                     </div>
                     <div class="flex gap-1-5">
                         <div class="transaction-column">
@@ -788,36 +803,6 @@
                             <a href=${`${floBlockchainAPI.current_server}tx/${payment_refRef}`} target="_blank">See withdrawal transaction</a>
                         </div>
                     </div>
-                </li>
-                `
-            },
-            investmentCard(details) {
-                const {
-                    floId,
-                    amountInvested,
-                    netValue,
-                    fundId,
-                    hasMatured = false,
-                    allowsEarlyWithdrawal = false,
-                } = details
-                const isRedeemable = hasMatured || allowsEarlyWithdrawal
-                return html`
-                <li class="fund-investor" id=${`${fundId}_${floId}`}>
-                    <div class="grid">
-                        <span class="label">FLO address</span>
-                        <span class="value flo-id">${floId}</span>
-                    </div>
-                    <div class="flex gap-1-5">
-                        <div class="transaction-column">
-                            <span class="label">Invested</span>
-                            <span class="value amount-invested">${formatAmount(amountInvested[preferredCurrency], preferredCurrency)}</span>
-                        </div>
-                        <div class="transaction-column">
-                            <span class="label">Present value</span>
-                            <span class="value net-value" style="color: var(--green)">${formatAmount(netValue[preferredCurrency], preferredCurrency)}</span>
-                        </div>
-                    </div>
-                    <button class="button fund-investor__withdraw" ?disabled=${!isRedeemable}>Withdraw</button>
                 </li>
                 `
             },
@@ -985,13 +970,13 @@
             }
         }
 
-        getRef('search_investor').addEventListener('input', debounce(() => {
+        getRef('search_investor').addEventListener('input', debounce((e) => {
+            const searchKey = e.target.value.trim().toLowerCase();
             document.querySelectorAll('.fund-block').forEach(block => {
                 block.querySelectorAll('.fund-investor').forEach(child => {
-                    if (child.id.toLowerCase().includes(getRef('search_investor').value.trim().toLowerCase())) {
+                    if (child.id.toLowerCase().includes(searchKey) || child.dataset.btcId.toLowerCase().includes(searchKey)) {
                         child.classList.remove('hidden')
-                    }
-                    else {
+                    } else {
                         child.classList.add('hidden')
                     }
                 })
