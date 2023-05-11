@@ -193,15 +193,16 @@ const bobsFund = (function () {
 function refreshBlockchainData(newOnly = false) {
     return new Promise((resolve, reject) => {
         compactIDB.readData("appendix", "lastTx").then(lastTx => {
-            floBlockchainAPI.readData(floGlobals.adminID, {
-                ignoreOld: lastTx,
-                senders: floExchangeAPI.nodeList.concat(floGlobals.adminID), //sentOnly: true,
-                tx: true,
-                filter: d => d.startsWith(bobsFund.productStr)
-            }).then(result => {
+            var query_options = { tx: true, filter: d => d.startsWith(bobsFund.productStr) };
+            query_options.senders = floExchangeAPI.nodeList.concat(floGlobals.adminID); //sentOnly: true,
+            if (typeof lastTx == 'number')  //lastTx is tx count (*backward support)
+                query_options.ignoreOld = lastTx;
+            else if (typeof lastTx == 'string') //lastTx is txid of last tx
+                query_options.after = lastTx;
+            floBlockchainAPI.readData(floGlobals.adminID, query_options).then(result => {
                 compactIDB.readAllData("funds").then(funds => {
                     let writeKeys = new Set();
-                    result.data.reverse().forEach(d => {
+                    result.items.reverse().forEach(d => {
                         if (/close: /i.test(d.data)) {
                             let ctx = d.data.match(/close: [0-9a-z]{64}/i).toString().split(": ")[1];
                             funds[ctx].push({
@@ -228,7 +229,7 @@ function refreshBlockchainData(newOnly = false) {
                     })
                     writeKeys = Array.from(writeKeys);
                     Promise.all(writeKeys.map(k => compactIDB.writeData("funds", funds[k], k))).then(results => {
-                        compactIDB.writeData('appendix', result.totalTxs, "lastTx");
+                        compactIDB.writeData('appendix', result.lastItem, "lastTx");
                         resolve(newOnly ? writeKeys.map(k => funds[k]) : funds)
                     }).catch(error => reject(error))
                 }).catch(error => reject(error))
