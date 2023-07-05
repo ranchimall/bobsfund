@@ -1,6 +1,6 @@
 'use strict';
 
-(function (EXPORTS) { //floExchangeAPI v1.1.3
+(function (EXPORTS) { //floExchangeAPI v1.2.0a
     const exchangeAPI = EXPORTS;
 
     const DEFAULT = {
@@ -519,6 +519,7 @@
         DUPLICATE_SIGNATURE: '017',
         SESSION_INVALID: '018',
         SESSION_EXPIRED: '019',
+        INVALID_VALUE: '020',
         INVALID_TOKEN_NAME: '021',
         INVALID_NUMBER: '022',
         INVALID_TYPE: '023',
@@ -598,6 +599,26 @@
 
         CONVERT_MODE_GET: 1,
         CONVERT_MODE_PUT: 0,
+    }
+
+    const serviceList = exchangeAPI.serviceList = {
+        EXCHANGE: "exchange",
+        CONVERT: "convert",
+        BLOCKCHAIN_BOND: "blockchain-bond",
+        BOBS_FUND: "bobs-fund"
+    }
+
+    exchangeAPI.getSink = function (service = serviceList.EXCHANGE) {
+        return new Promise((resolve, reject) => {
+            if (!(Object.values(serviceList).includes(service)))
+                return reject(ExchangeError(ExchangeError.BAD_REQUEST_CODE, 'service required', errorCode.INVALID_VALUE));
+            fetch_api('/get-sink?service=' + service)
+                .then(result => {
+                    responseParse(result, false)
+                        .then(result => resolve(result))
+                        .catch(error => reject(error))
+                }).catch(error => reject(error));
+        })
     }
 
     exchangeAPI.getAccount = function (floID, proxySecret) {
@@ -1241,6 +1262,17 @@
         })
     }
 
+    exchangeAPI.getConvertValues = function () {
+        return new Promise((resolve, reject) => {
+            fetch_api('/get-convert-values')
+                .then(result => {
+                    responseParse(result)
+                        .then(result => resolve(result))
+                        .catch(error => reject(error))
+                }).catch(error => reject(error));
+        })
+    }
+
     exchangeAPI.convertToBTC = function (amount, floID, sinkID, privKey) {
         return new Promise((resolve, reject) => {
             if (!floCrypto.verifyPrivKey(privKey, floID))
@@ -1495,6 +1527,66 @@
         })
     }
 
+    exchangeAPI.checkBlockchainBond = function (prior_time, floID, proxySecret) {
+        return new Promise((resolve, reject) => {
+            let request = {
+                floID: floID,
+                prior_time,
+                timestamp: Date.now()
+            };
+            if (floCrypto.getFloID(proxySecret) === floID) //Direct signing (without proxy)
+                request.pubKey = floCrypto.getPubKeyHex(proxySecret);
+            request.sign = signRequest({
+                type: "check_blockchain_bond",
+                prior_time,
+                timestamp: request.timestamp
+            }, proxySecret);
+            console.debug(request);
+
+            fetch_api('/check-blockchain-bond', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            }).then(result => {
+                responseParse(result)
+                    .then(result => resolve(result))
+                    .catch(error => reject(error))
+            }).catch(error => reject(error))
+        })
+    }
+
+    exchangeAPI.checkBobsFund = function (prior_time, floID, proxySecret) {
+        return new Promise((resolve, reject) => {
+            let request = {
+                floID: floID,
+                prior_time,
+                timestamp: Date.now()
+            };
+            if (floCrypto.getFloID(proxySecret) === floID) //Direct signing (without proxy)
+                request.pubKey = floCrypto.getPubKeyHex(proxySecret);
+            request.sign = signRequest({
+                type: "check_bobs_fund",
+                prior_time,
+                timestamp: request.timestamp
+            }, proxySecret);
+            console.debug(request);
+
+            fetch_api('/check-bobs-fund', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            }).then(result => {
+                responseParse(result)
+                    .then(result => resolve(result))
+                    .catch(error => reject(error))
+            }).catch(error => reject(error))
+        })
+    }
+
     exchangeAPI.closeBobsFundInvestment = function (fund_id, floID, privKey) {
         return new Promise((resolve, reject) => {
             if (!floCrypto.verifyPrivKey(privKey, floID))
@@ -1526,28 +1618,133 @@
         })
     }
 
+    exchangeAPI.generateSink = function (group, floID, privKey) {
+        return new Promise((resolve, reject) => {
+            if (!floCrypto.verifyPrivKey(privKey, floID))
+                return reject(ExchangeError(ExchangeError.BAD_REQUEST_CODE, "Invalid Private Key", errorCode.INVALID_PRIVATE_KEY));
+            if (floID !== DEFAULT.marketID)
+                return reject(ExchangeError(ExchangeError.BAD_REQUEST_CODE, "Access Denied", errorCode.ACCESS_DENIED));
+            let request = {
+                floID: floID,
+                group: group,
+                timestamp: Date.now()
+            };
+            request.pubKey = floCrypto.getPubKeyHex(privKey);
+            request.sign = signRequest({
+                type: "generate_sink",
+                group: group,
+                timestamp: request.timestamp
+            }, privKey);
+            console.debug(request);
+
+            fetch_api('/generate-sink', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            }).then(result => {
+                responseParse(result, false)
+                    .then(result => resolve(result))
+                    .catch(error => reject(error))
+            }).catch(error => reject(error))
+        })
+    }
+
+    exchangeAPI.reshareSink = function (sinkID, floID, privKey) {
+        return new Promise((resolve, reject) => {
+            if (!floCrypto.verifyPrivKey(privKey, floID))
+                return reject(ExchangeError(ExchangeError.BAD_REQUEST_CODE, "Invalid Private Key", errorCode.INVALID_PRIVATE_KEY));
+            if (floID !== DEFAULT.marketID)
+                return reject(ExchangeError(ExchangeError.BAD_REQUEST_CODE, "Access Denied", errorCode.ACCESS_DENIED));
+            let request = {
+                floID: floID,
+                id: sinkID,
+                timestamp: Date.now()
+            };
+            request.pubKey = floCrypto.getPubKeyHex(privKey);
+            request.sign = signRequest({
+                type: "reshare_sink",
+                id: sinkID,
+                timestamp: request.timestamp
+            }, privKey);
+            console.debug(request);
+
+            fetch_api('/reshare-sink', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            }).then(result => {
+                responseParse(result, false)
+                    .then(result => resolve(result))
+                    .catch(error => reject(error))
+            }).catch(error => reject(error))
+        })
+    }
+
+    exchangeAPI.discardSink = function (sinkID, floID, privKey) {
+        return new Promise((resolve, reject) => {
+            if (!floCrypto.verifyPrivKey(privKey, floID))
+                return reject(ExchangeError(ExchangeError.BAD_REQUEST_CODE, "Invalid Private Key", errorCode.INVALID_PRIVATE_KEY));
+            if (floID !== DEFAULT.marketID)
+                return reject(ExchangeError(ExchangeError.BAD_REQUEST_CODE, "Access Denied", errorCode.ACCESS_DENIED));
+            let request = {
+                floID: floID,
+                id: sinkID,
+                timestamp: Date.now()
+            };
+            request.pubKey = floCrypto.getPubKeyHex(privKey);
+            request.sign = signRequest({
+                type: "discard_sink",
+                id: sinkID,
+                timestamp: request.timestamp
+            }, privKey);
+            console.debug(request);
+
+            fetch_api('/discard-sink', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            }).then(result => {
+                responseParse(result, false)
+                    .then(result => resolve(result))
+                    .catch(error => reject(error))
+            }).catch(error => reject(error))
+        })
+
+    }
+
+    const _l = key => DEFAULT.marketApp + '-' + key;
+
     exchangeAPI.init = function refreshDataFromBlockchain() {
         return new Promise((resolve, reject) => {
-            let nodes, assets, tags, lastTx;
+            let nodes, trusted = new Set(), assets, tags, lastTx;
             try {
-                nodes = JSON.parse(localStorage.getItem('exchange-nodes'));
-                assets = new Set((localStorage.getItem('exchange-assets') || "").split(','));
-                tags = new Set((localStorage.getItem('exchange-tags') || "").split(','));
+                nodes = JSON.parse(localStorage.getItem(_l('nodes')));
+                trusted = new Set((localStorage.getItem(_l('trusted')) || "").split(','));
+                assets = new Set((localStorage.getItem(_l('assets')) || "").split(','));
+                tags = new Set((localStorage.getItem(_l('tags')) || "").split(','));
                 if (typeof nodes !== 'object' || nodes === null)
                     throw Error('nodes must be an object')
                 else
-                    lastTx = parseInt(localStorage.getItem('exchange-lastTx')) || 0;
+                    lastTx = localStorage.getItem(_l('lastTx'));
             } catch (error) {
                 nodes = {};
+                trusted = new Set();
                 assets = new Set();
                 tags = new Set();
-                lastTx = 0;
             }
-            floBlockchainAPI.readData(DEFAULT.marketID, {
-                ignoreOld: lastTx,
-                sentOnly: true,
-                pattern: DEFAULT.marketApp
-            }).then(result => {
+
+            var query_options = { sentOnly: true, pattern: DEFAULT.marketApp };
+            if (typeof lastTx == 'string' && /^[0-9a-f]{64}/i.test(lastTx))//lastTx is txid of last tx
+                query_options.after = lastTx;
+            else if (!isNaN(lastTx))//lastTx is tx count (*backward support)
+                query_options.ignoreOld = parseInt(lastTx);
+            floBlockchainAPI.readData(DEFAULT.marketID, query_options).then(result => {
                 result.data.reverse().forEach(data => {
                     var content = JSON.parse(data)[DEFAULT.marketApp];
                     //Node List
@@ -1558,6 +1755,18 @@
                         if (content.Nodes.add)
                             for (let n in content.Nodes.add)
                                 nodes[n] = content.Nodes.add[n];
+                        if (content.Nodes.update)
+                            for (let n in content.Nodes.update)
+                                nodes[n] = content.Nodes.update[n];
+                    }
+                    //Trusted List
+                    if (content.Trusted) {
+                        if (content.Trusted.remove)
+                            for (let id of content.Trusted.remove)
+                                trusted.delete(id);
+                        if (content.Trusted.add)
+                            for (let id of content.Trusted.add)
+                                trusted.add(id);
                     }
                     //Asset List
                     if (content.Assets) {
@@ -1574,10 +1783,11 @@
                                 tags.add(t);
                     }
                 });
-                localStorage.setItem('exchange-lastTx', result.totalTxs);
-                localStorage.setItem('exchange-nodes', JSON.stringify(nodes));
-                localStorage.setItem('exchange-assets', Array.from(assets).join(","));
-                localStorage.setItem('exchange-tags', Array.from(tags).join(","));
+                localStorage.setItem(_l('lastTx'), result.lastItem);
+                localStorage.setItem(_l('nodes'), JSON.stringify(nodes));
+                localStorage.setItem(_l('trusted'), Array.from(trusted).join(","));
+                localStorage.setItem(_l('assets'), Array.from(assets).join(","));
+                localStorage.setItem(_l('tags'), Array.from(tags).join(","));
                 nodeURL = nodes;
                 nodeKBucket = new K_Bucket(DEFAULT.marketID, Object.keys(nodeURL));
                 nodeList = nodeKBucket.order;
@@ -1586,14 +1796,119 @@
         })
     }
 
+    const config = exchangeAPI.config = {
+        get trustedList() {
+            return new Set((localStorage.getItem(_l('trusted')) || "").split(','));
+        },
+        get assetList() {
+            return new Set((localStorage.getItem(_l('assets')) || "").split(','));
+        },
+        get tagList() {
+            return new Set((localStorage.getItem(_l('tags')) || "").split(','));
+        }
+    }
+
     exchangeAPI.clearAllLocalData = function () {
-        localStorage.removeItem('exchange-nodes');
-        localStorage.removeItem('exchange-assets');
-        localStorage.removeItem('exchange-tags');
-        localStorage.removeItem('exchange-lastTx');
-        localStorage.removeItem('exchange-proxy_secret');
-        localStorage.removeItem('exchange-user_ID');
+        localStorage.removeItem(_l('nodes'));
+        localStorage.removeItem(_l('trusted'));
+        localStorage.removeItem(_l('assets'));
+        localStorage.removeItem(_l('tags'));
+        localStorage.removeItem(_l('lastTx'));
+        localStorage.removeItem(_l('proxy_secret'));
+        localStorage.removeItem(_l('user_ID'));
         location.reload();
+    }
+
+    //container for user ID and proxy private-key
+    const proxy = exchangeAPI.proxy = {
+        user: null,
+        private: null,
+        public: null,
+        async lock() {
+            if (!this.private)
+                return notify("No proxy key found!", 'error');
+            getPromptInput("Add password", 'This password applies to this browser only!', {
+                isPassword: true,
+                confirmText: "Add password"
+            }).then(pwd => {
+                if (!pwd)
+                    notify("Password cannot be empty", 'error');
+                else if (pwd.length < 4)
+                    notify("Password minimum length is 4", 'error');
+                else {
+                    let tmp = Crypto.AES.encrypt(this.private, pwd);
+                    localStorage.setItem(_l('proxy_secret'), "?" + tmp);
+                    notify("Successfully locked with Password", 'success');
+                }
+            }).catch(_ => null);
+        },
+        clear() {
+            localStorage.removeItem(_l('proxy_secret'));
+            localStorage.removeItem(_l('user_ID'));
+            this.user = null;
+            this.private = null;
+            this.public = null;
+        },
+        get sinkID() {
+            return getRef("sink_id").value;
+        },
+        set userID(id) {
+            localStorage.setItem(_l('user_ID'), id);
+            this.user = id;
+        },
+        get userID() {
+            if (this.user)
+                return this.user;
+            else {
+                let id = localStorage.getItem(_l('user_ID'));
+                return id ? this.user = id : undefined;
+            }
+        },
+        set secret(key) {
+            localStorage.setItem(_l('proxy_secret'), key);
+            this.private = key;
+            this.public = floCrypto.getPubKeyHex(key);
+        },
+        get secret() {
+            const self = this;
+            return new Promise((resolve, reject) => {
+                if (self.private)
+                    return resolve(self.private);
+
+                const Reject = reason => {
+                    notify(reason, 'error');
+                    reject(reason);
+                }
+                const setValues = priv => {
+                    try {
+                        self.private = priv;
+                        self.public = floCrypto.getPubKeyHex(priv);
+                        resolve(self.private);
+                    } catch (error) {
+                        Reject("Unable to fetch Proxy secret");
+                    }
+                };
+                let tmp = localStorage.getItem(_l('proxy_secret'));
+                if (typeof tmp !== "string")
+                    Reject("Unable to fetch Proxy secret");
+                else if (tmp.startsWith("?")) {
+                    getPromptInput("Enter password", '', {
+                        isPassword: true
+                    }).then(pwd => {
+                        if (!pwd)
+                            return Reject("Password Required for making transactions");
+                        try {
+                            tmp = Crypto.AES.decrypt(tmp.substring(1), pwd);
+                            setValues(tmp);
+                        } catch (error) {
+                            Reject("Incorrect Password! Password Required for making transactions");
+
+                        }
+                    }).catch(_ => Reject("Password Required for making transactions"));
+                } else
+                    setValues(tmp);
+            })
+        }
     }
 
 })('object' === typeof module ? module.exports : window.floExchangeAPI = {});
